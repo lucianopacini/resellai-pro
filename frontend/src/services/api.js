@@ -1,0 +1,77 @@
+import { supabase } from "./supabaseClient";
+
+const API_URL = "http://localhost:3000";
+
+export const createProduct = async (productData) => {
+    const response = await fetch(`${API_URL}/products`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+    });
+
+    return response.json();
+};
+
+export const getProducts = async () => {
+    const response = await fetch(`${API_URL}/products`);
+    return response.json();
+};
+
+export const deleteProduct = async (id) => {
+    const response = await fetch(`${API_URL}/products/${id}`, {
+        method: "DELETE",
+    });
+
+    return response.json();
+};
+
+export const updateProduct = async (id, productData) => {
+    const response = await fetch(`${API_URL}/products/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+    });
+
+    return response.json();
+};
+
+export const uploadImage = async (file) => {
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { data, error } = await supabase.storage
+        .from("products-images")
+        .upload(fileName, file);
+
+    if (error) {
+        console.error(error);
+        return null;
+    }
+
+    const { data: publicUrl } = supabase.storage
+        .from("products-images")
+        .getPublicUrl(fileName);
+
+    return publicUrl.publicUrl;
+};
+
+export const getProductById = async (id) => {
+    try {
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("id", Number(id))
+            .maybeSingle();
+
+        if (error) throw error;
+
+        return data;
+
+    } catch (error) {
+        console.error("Errore fetch prodotto:", error);
+        return null;
+    }
+};

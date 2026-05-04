@@ -1,0 +1,275 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f0ff;
+  /* 👈 al posto del gradient */
+
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  text-align: center;
+  color: #5b3df5;
+  /* margin-bottom: 10px; */
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input {
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #5b3df5;
+  box-shadow: 0 0 0 3px rgba(91, 61, 245, 0.15);
+}
+
+button {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background-color: #5b3df5;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #472bd1;
+}
+
+.product-card {
+  margin-top: 20px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+
+  transition: box-shadow 0.2s ease;
+  /* 👈 più leggero */
+
+  position: relative;
+  overflow: hidden;
+
+
+  /* 👈 renderizza solo quando serve */
+  contain-intrinsic-size: 260px;
+  /* 👈 riserva spazio (evita salti) */
+
+  contain: layout paint;
+}
+
+.badge-new {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 999px;
+
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+
+.product-card h3 {
+  margin-top: 0;
+  color: #5b3df5;
+}
+
+.user-card {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8f5ff;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+}
+
+.user-card h3 {
+  margin-top: 0;
+  color: #5b3df5;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.product-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  aspect-ratio: 5 / 3;
+  /* 👈 stabilizza layout */
+  backface-visibility: hidden;
+  aspect-ratio: 5 / 3;
+  background: #eee;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-img.loaded {
+  opacity: 1;
+}
+
+.skeleton {
+  border-radius: 10px;
+
+  background: linear-gradient(90deg,
+      #eeeeee 25%,
+      #dddddd 50%,
+      #eeeeee 75%);
+
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+
+
+.product-card:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 10px;
+}
+
+.product-img,
+.skeleton {
+  position: absolute;
+  inset: 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.modal-overlay.open {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 320px;
+  max-width: 90%;
+
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+
+.modal.open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.product-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 900px;
+  margin: 40px auto;
+  align-items: start;
+}
+
+.product-info {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.product-title {
+  font-size: 32px;
+  color: #5b3df5;
+  margin-bottom: 15px;
+}
+
+.date {
+  font-size: 12px;
+  color: #777;
+  margin-top: 10px;
+}
+
+.back-btn {
+  margin-bottom: 15px;
+  padding: 8px 14px;
+  border: none;
+  background: #5b3df5;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.product-detail img {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.badge-new {
+  z-index: 10;
+}
