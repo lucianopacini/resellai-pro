@@ -375,12 +375,15 @@ function ProductDetail() {
 
             </div>
 
-
             {isImageOpen && (
-                <div className="image-modal">
+                <div
+                    className="image-modal"
+                    onClick={() => setIsImageOpen(false)}
+                >
                     <img
                         src={product.image_url}
                         alt="prodotto grande"
+                        onClick={(e) => e.stopPropagation()}
                     />
 
                     <button
@@ -388,13 +391,12 @@ function ProductDetail() {
                     >
                         ✕
                     </button>
+
                 </div>
             )}
-
-
-
         </div>
     );
 }
 
-export default ProductDetail; 
+
+export default ProductDetail;

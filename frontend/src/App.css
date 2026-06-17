@@ -242,8 +242,8 @@ button:disabled {
 }
 
 .image-modal img {
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 70%;
+  max-height: 70%;
 
   border-radius: 16px;
 }
