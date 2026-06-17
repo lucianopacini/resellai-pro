@@ -49,9 +49,10 @@ function App() {
 
   const navigate = useNavigate();
 
-  // Filtri
+  // Filtri e ordinamento
   const [searchTerm, setSearchTerm] = useState("");
   const [categorySearch, setCategorySearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
 
   // Immagine
   const [image, setImage] = useState(null);
@@ -269,18 +270,49 @@ function App() {
     };
   }, []);
 
-  // ================= LOGICA FILTRAGGIO PRODOTTI =================
+  // ================= FILTRAGGIO E ORDINAMENTO PRODOTTI =================
   const filteredProducts = useMemo(() => {
-    return products
+    let result = products
       .filter((product) => product.user_id === loggedUser?.id)
       .filter((product) =>
         product.brand.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .filter((product) =>
         product.category.toLowerCase().includes(categorySearch.toLowerCase())
-      )
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  }, [products, loggedUser, searchTerm, categorySearch]);
+      );
+
+    if (sortBy === "newest") {
+      result.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+    }
+
+    if (sortBy === "oldest") {
+      result.sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+      );
+    }
+
+    if (sortBy === "brand-asc") {
+      result.sort(
+        (a, b) => a.brand.localeCompare(b.brand)
+      );
+    }
+
+    if (sortBy === "brand-desc") {
+      result.sort(
+        (a, b) => b.brand.localeCompare(a.brand)
+      );
+    }
+
+    return result;
+  }, [
+    products,
+    loggedUser,
+    searchTerm,
+    categorySearch,
+    sortBy,
+  ]);
 
 
 
@@ -294,74 +326,98 @@ function App() {
 
             {/* ================= AUTH SECTION ================= */}
 
-            <h2>Registrazione</h2>
+            <div className="auth-section">
+              {!loggedUser && (
+                <div>
+                  <h2>Registrazione</h2>
 
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+                  <div className="auth-row">
 
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
 
-            <button type="button" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? "Nascondi password" : "Mostra password"}
-            </button>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
 
-            <button onClick={handleSignup}>Registrati</button>
-            <button onClick={handleLogin}>Accedi</button>
-            <button onClick={handleLogout}>Logout</button>
+                    <button
+                      className="password-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? "🙈" : "👁️"}
+                    </button>
 
-            <div className="user-card">
-              {loggedUser ? (
-                <>
-                  <h3>Profilo utente</h3>
-                  <p>Benvenuto, {loggedUser.email}</p>
-                </>
-              ) : (
-                <>
-                  <h3>Profilo utente</h3>
-                  <p>Nessun utente loggato</p>
-                </>
+                    <button onClick={handleSignup}>Registrati</button>
+                    <button onClick={handleLogin}>Accedi</button>
+
+                  </div>
+                </div>
+
               )}
             </div>
-
 
             {/* ================= HEADER ================= */}
 
             <h1>ResellAI Pro</h1>
 
-            {editingProduct && <h2>✏️ Modifica prodotto</h2>}
+            <p className="tagline"> Il tuo assistente AI per il reselling</p>
 
-            <p className="subtitle">
-              {editingProduct
-                ? "Aggiorna i dati del prodotto selezionato"
-                : "Compila il form per aggiungere un nuovo prodotto"}
-            </p>
+            <div className="user-card">
+              {loggedUser ? (
+                <div className="user-info">
+                  👤 Benvenuto, <span className="username">{loggedUser.email}</span>
+                  <button onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <p>🔒 Accedi o registrati per iniziare.</p>
+              )}
+            </div>
+
+            {loggedUser && (
+              <>
+                <p className="subtitle">
+                  {editingProduct
+                    ? "Aggiorna i dati del prodotto selezionato"
+                    : "Compila il form per aggiungere un nuovo prodotto"}
+                </p>
+
+                {!editingProduct && (
+                  <p className="upload-tip">
+                    📸 Per risultati migliori usa foto verticali e ben illuminate.
+                  </p>
+                )}
+              </>
+            )}
 
             {loading && <p>🔄 Aggiornamento prodotti...</p>}
 
 
             {/* ================= FORM PRODOTTO ================= */}
 
-            <ProductForm
-              handleSubmit={handleSubmit}
-              handleImageChange={handleImageChange}
-              preview={preview}
-              formData={formData}
-              handleChange={handleChange}
-              editingProduct={editingProduct}
-              handleCancelEdit={handleCancelEdit}
-              loading={loading}
-              fileInputRef={fileInputRef}
-              firstInputRef={firstInputRef}
-            />
+            {loggedUser && (
+              <ProductForm
+                handleSubmit={handleSubmit}
+                handleImageChange={handleImageChange}
+                preview={preview}
+                formData={formData}
+                handleChange={handleChange}
+                editingProduct={editingProduct}
+                handleCancelEdit={handleCancelEdit}
+                loading={loading}
+                fileInputRef={fileInputRef}
+                firstInputRef={firstInputRef}
+              />
+
+            )}
 
 
             {/* ================= FEEDBACK ================= */}
@@ -371,88 +427,115 @@ function App() {
 
             {/* ================= FILTRI ================= */}
 
-            <h2>
-              Prodotti salvati ({filteredProducts.length})
-            </h2>
+            {loggedUser && (
+              <>
+                <h2>
+                  Prodotti salvati ({filteredProducts.length})
+                </h2>
 
-            <input
-              type="text"
-              placeholder="Cerca per brand"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+                <div className="filters">
+                  <input
+                    className="search-input"
+                    type="text"
+                    placeholder="Cerca per brand"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
 
-            <input
-              type="text"
-              placeholder="Cerca per categoria"
-              value={categorySearch}
-              onChange={(e) => setCategorySearch(e.target.value)}
-            />
+                  <input
+                    className="search-input"
+                    type="text"
+                    placeholder="Cerca per categoria"
+                    value={categorySearch}
+                    onChange={(e) => setCategorySearch(e.target.value)}
+                  />
 
-            <p>
-              Stai visualizzando {filteredProducts.length} prodotti
-            </p>
+                  <select
+                    className="sort-select"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="newest">Più recenti</option>
+                    <option value="oldest">Più vecchi</option>
+                    <option value="brand-asc">Brand A-Z</option>
+                    <option value="brand-desc">Brand Z-A</option>
+                  </select>
+                </div>
+
+                <p>
+                  Stai visualizzando {filteredProducts.length} prodotti
+                </p>
+              </>
+            )}
+
+
 
             {/* ================= LISTA PRODOTTI ================= */}
 
-            <ProductList
-              products={filteredProducts}
-              onDelete={handleDeleteProduct}
-              onEdit={(product) => {
-                setEditingProduct(product);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              onCancelEdit={handleCancelEdit}
-              editingProduct={editingProduct}
-              loading={loading}
-              onSelect={(product) => setSelectedProduct(product)}
-            />
+            {
+              loggedUser && (
+                <ProductList
+                  products={filteredProducts}
+                  onDelete={handleDeleteProduct}
+                  onEdit={(product) => {
+                    setEditingProduct(product);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  onCancelEdit={handleCancelEdit}
+                  editingProduct={editingProduct}
+                  loading={loading}
+                  onSelect={(product) => setSelectedProduct(product)}
+                />
+              )
+            }
 
 
-            {selectedProduct && (
-              <div
-                className={`modal-overlay open`}
-                onClick={() => setSelectedProduct(null)}
-              >
+            {
+              selectedProduct && (
                 <div
-                  className={`modal open`}
-                  onClick={(e) => e.stopPropagation()}
+                  className={`modal-overlay open`}
+                  onClick={() => setSelectedProduct(null)}
                 >
-
-                  <img
-                    src={selectedProduct.image_url}
-                    alt="prodotto"
-                    className="modal-img"
-                  />
-
-                  <h2>{selectedProduct.brand}</h2>
-                  <p><strong>Categoria:</strong> {selectedProduct.category}</p>
-                  <p><strong>Taglia:</strong> {selectedProduct.size}</p>
-                  <p><strong>Condizione:</strong> {selectedProduct.condition}</p>
-
-                  <button onClick={() => setSelectedProduct(null)}>
-                    Chiudi
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      navigate(`/product/${selectedProduct.id}`);
-                    }}
+                  <div
+                    className={`modal open`}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    Vai alla pagina →
-                  </button>
 
+                    <img
+                      src={selectedProduct.image_url}
+                      alt="prodotto"
+                      className="modal-img"
+                    />
+
+                    <h2>{selectedProduct.brand}</h2>
+                    <p><strong>Categoria:</strong> {selectedProduct.category}</p>
+                    <p><strong>Taglia:</strong> {selectedProduct.size}</p>
+                    <p><strong>Condizione:</strong> {selectedProduct.condition}</p>
+
+                    <button onClick={() => setSelectedProduct(null)}>
+                      Chiudi
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        navigate(`/product/${selectedProduct.id}`);
+                      }}
+                    >
+                      Vai alla pagina →
+                    </button>
+
+                  </div>
                 </div>
-              </div>
-            )}
+              )
+            }
 
-          </div>
+          </div >
         }
       />
 
-      <Route path="/product/:id" element={<ProductDetail />} />
+      < Route path="/product/:id" element={< ProductDetail />} />
 
-    </Routes>
+    </Routes >
 
   );
 

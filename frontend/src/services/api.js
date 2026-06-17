@@ -99,3 +99,57 @@ export const getAIDescription = async (product) => {
 
     return response.json();
 };
+
+export const getAITitle = async (product) => {
+    const response = await fetch("http://localhost:3000/api/ai/generate-title", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+    });
+
+    return response.json();
+};
+
+export const getAIMarketScore = async (product) => {
+    const response = await fetch("http://localhost:3000/api/ai/market-score", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+    });
+
+    return response.json();
+};
+
+export const getAIStrengths = async (product) => {
+    const response = await fetch(
+        "http://localhost:3000/api/ai/product-strengths",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ product }),
+        }
+    );
+
+    return response.json();
+};
+
+export const getAIIdealCustomer = async (product) => {
+    const response = await fetch(
+        "http://localhost:3000/api/ai/ideal-customer",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ product }),
+        }
+    );
+
+    return response.json();
+};

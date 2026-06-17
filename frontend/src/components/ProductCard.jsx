@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AIBox from "../components/AIBox";
-
 
 function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, loading, onSelect }) {
 
     const [loaded, setLoaded] = useState(false);
 
-    const [aiSuggestion, setAiSuggestion] = useState(null);
+
 
     console.log("loaded:", loaded);
 
@@ -20,24 +18,6 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
 
     const navigate = useNavigate();
     console.log("ID prodotto:", product.id);
-
-    // Funzione AI
-    const handleAISuggest = () => {
-        if (!product) return;
-
-        let suggestion;
-
-        if (product.brand.toLowerCase().includes("nike")) {
-            suggestion = "Questo prodotto ha un buon valore di mercato. Prezzo consigliato: 60-80€.";
-        } else if (product.condition === "ottimo") {
-            suggestion = "Condizione ottima → puoi venderlo facilmente. Prezzo consigliato: 40-60€.";
-        } else {
-            suggestion = "Prodotto base → prezzo competitivo consigliato: 20-30€.";
-        }
-
-        setAiSuggestion(suggestion);
-    };
-
 
     return (
         <div
@@ -98,6 +78,7 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
                         padding: "6px 10px",
                         borderRadius: "6px",
                         cursor: "pointer",
+                        flex: 1,
                     }}
                 >
                     Elimina
@@ -115,6 +96,7 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
                         padding: "6px 10px",
                         borderRadius: "6px",
                         cursor: "pointer",
+                        flex: 1,
                     }}
                 >
                     Modifica
@@ -132,6 +114,7 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
                         padding: "6px 10px",
                         borderRadius: "6px",
                         cursor: "pointer",
+                        flex: 1,
                     }}
                 >
                     Dettagli
@@ -158,18 +141,6 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
                     ❌ Annulla modifica
                 </button>
             )}
-
-            <button
-                onClick={(e) => {
-                    e.stopPropagation(); // 🔥 QUESTO MANCA
-                    handleAISuggest();
-                }}
-            >
-                🤖 AI
-            </button>
-
-            {aiSuggestion && <AIBox text={aiSuggestion} />}
-
 
         </div>
     );

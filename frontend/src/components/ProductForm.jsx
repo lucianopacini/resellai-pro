@@ -11,6 +11,7 @@ function ProductForm({
     firstInputRef
 }) {
     return (
+
         <form
             onSubmit={handleSubmit}
             style={{

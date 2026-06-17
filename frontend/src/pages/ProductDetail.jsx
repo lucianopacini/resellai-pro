@@ -1,23 +1,61 @@
+// =========================
+// IMPORT
+// =========================
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getProductById, getAISuggestion, getAIDescription } from "../services/api";
-import AIBox from "../components/AIBox";
-
+import {
+    getProductById,
+    getAISuggestion,
+    getAIDescription,
+    getAITitle,
+    getAIMarketScore,
+    getAIStrengths,
+    getAIIdealCustomer
+} from "../services/api";
 
 function ProductDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    // ========================= 
+    // STATE
+    // =========================
+
+    // Stato prodotto
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Zoom immagine dettaglio
+    const [isImageOpen, setIsImageOpen] = useState(false);
+
+    // Stato animazione AI
+    const [displayedText, setDisplayedText] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+
+    // Risultati AI 
     const [aiSuggestion, setAiSuggestion] = useState(null);
     const [aiDescription, setAiDescription] = useState(null);
-    const [aiDescLoading, setAiDescLoading] = useState(false);
+    const [aiTitle, setAiTitle] = useState(null);
+    const [aiMarketScore, setAiMarketScore] = useState(null);
+    const [aiStrengths, setAiStrengths] = useState(null);
+    const [aiIdealCustomer, setAiIdealCustomer] = useState(null);
 
-    // Stato del loading
+    // Stato sezioni AI
+    const [showCustomer, setShowCustomer] = useState(false);
+    const [showStrengths, setShowStrengths] = useState(false);
+    const [showSuggestion, setShowSuggestion] = useState(false);
+    const [showDescription, setShowDescription] = useState(false);
+
+    // Stato caricamento AI
+    const [aiDescLoading, setAiDescLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
 
+    // =========================
+    // EFFECTS
+    // =========================
+
+    // Recupera il prodotto corrente dal database
     useEffect(() => {
         const fetchProduct = async () => {
             const data = await getProductById(id);
@@ -29,12 +67,42 @@ function ProductDetail() {
         fetchProduct();
     }, [id]);
 
+    // Effetto scrittura AI stile ChatGPT
+    useEffect(() => {
+        if (!aiSuggestion) return;
+
+        let index = 0;
+
+        setDisplayedText("");
+        setIsTyping(true);
+
+        const interval = setInterval(() => {
+            setDisplayedText(aiSuggestion.slice(0, index));
+            index++;
+
+            if (index > aiSuggestion.length) {
+                clearInterval(interval);
+                setIsTyping(false);
+            }
+        }, 20);
+
+        return () => clearInterval(interval);
+
+    }, [aiSuggestion]);
+
+    // Resetta stato AI quando cambia prodotto
     useEffect(() => {
         setAiSuggestion(null);
         setAiDescription(null);
         setAiLoading(false);
         setAiDescLoading(false);
+        setAiStrengths(null);
+        setAiIdealCustomer(null);
     }, [id]);
+
+    // =========================
+    // RENDER CONDITIONS
+    // =========================
 
     if (loading) {
         return <p style={{ padding: "20px" }}>Caricamento...</p>;
@@ -50,6 +118,11 @@ function ProductDetail() {
         );
     }
 
+    // =========================
+    // FUNCTIONS & HANDLERS
+    // =========================
+
+    // Verifica se il prodotto è stato creato nelle ultime 24 ore
     const isNew = (date) => {
         const created = new Date(date);
         const now = new Date();
@@ -57,7 +130,7 @@ function ProductDetail() {
         return diff < 24;
     };
 
-    // Funzione AI
+    // Avvia l'analisi AI del prodotto
     const handleAIAnalyze = async () => {
         if (!product) return;
 
@@ -68,13 +141,21 @@ function ProductDetail() {
         setAiDescLoading(true);
 
         try {
-            const [priceData, descData] = await Promise.all([
+            const [priceData, descData, titleData, scoreData, strengthsData, customerData] = await Promise.all([
                 getAISuggestion(product),
-                getAIDescription(product)
+                getAIDescription(product),
+                getAITitle(product),
+                getAIMarketScore(product),
+                getAIStrengths(product),
+                getAIIdealCustomer(product)
             ]);
 
             setAiSuggestion(priceData.suggestion);
             setAiDescription(descData.description);
+            setAiTitle(titleData.title);
+            setAiMarketScore(scoreData.score);
+            setAiStrengths(strengthsData.strengths);
+            setAiIdealCustomer(customerData.idealCustomer);
 
         } catch (error) {
             console.error(error);
@@ -86,12 +167,14 @@ function ProductDetail() {
         }
     };
 
-
+    // =========================
+    // RETURN JSX
+    // =========================
 
     return (
         <div className="product-detail">
 
-            {/* COLONNA SINISTRA */}
+            {/* IMMAGINE PRODOTTO */}
             <div>
                 {product.image_url && (
                     <img
@@ -101,11 +184,12 @@ function ProductDetail() {
                             width: "100%",
                             borderRadius: "12px"
                         }}
+                        onClick={() => setIsImageOpen(true)}
                     />
                 )}
             </div>
 
-            {/* COLONNA DESTRA */}
+            {/* DETTAGLI PRODOTTO + AI */}
             <div className="product-info">
                 <button className="back-btn" onClick={() => navigate("/")}>
                     ← Torna indietro
@@ -149,39 +233,168 @@ function ProductDetail() {
                             : "✨ Analizza prodotto"}
                 </button>
 
-
+                {/* Risultati AI */}
                 {(aiSuggestion || aiDescription) && (
-                    <div style={{
-                        marginTop: "20px",
-                        padding: "15px",
-                        background: "linear-gradient(135deg, #fff7ed, #ffedd5)",
-                        borderRadius: "12px"
-                    }}>
+                    <div
+                        className="ai-result-box"
+                        style={{
+                            marginTop: "20px",
+                            padding: "15px",
+                            background: "linear-gradient(135deg, #fff7ed, #ffedd5)",
+                            borderRadius: "12px"
+                        }}>
                         <strong>🤖 AI Assistant</strong>
 
-                        {aiSuggestion && (
-                            <p style={{ marginTop: "10px" }}>
-                                💰 {aiSuggestion}
+                        {aiTitle && (
+                            <p style={{
+                                marginTop: "10px",
+                                fontWeight: "bold",
+                                fontSize: "18px"
+                            }}>
+                                🏷️ {aiTitle}
                             </p>
                         )}
 
-                        {aiDescription && (
-                            <p style={{ marginTop: "10px" }}>
-                                📝 {aiDescription}
+                        {aiMarketScore && (
+                            <p style={{
+                                marginTop: "10px",
+                                color: "#92400e",
+                                fontWeight: "bold"
+                            }}>
+                                ⭐ {aiMarketScore}
                             </p>
                         )}
+
+                        <div>
+                            {aiIdealCustomer && (
+                                <>
+                                    <button
+                                        onClick={() => setShowCustomer(!showCustomer)}
+                                    >
+                                        {showCustomer ? "▼" : "▶"} 👤 Cliente ideale
+                                    </button>
+
+                                    {showCustomer && (
+                                        <p
+                                            style={{
+                                                marginTop: "10px",
+                                                color: "#374151",
+                                                lineHeight: "1.7"
+                                            }}
+                                        >
+                                            {aiIdealCustomer}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+
+                        <div>
+                            {aiStrengths && (
+                                <>
+                                    <button
+                                        onClick={() => setShowStrengths(!showStrengths)}
+                                    >
+                                        {showStrengths ? "▼" : "▶"} ⚡ Punti di forza
+                                    </button>
+
+                                    {showStrengths && (
+                                        <p
+                                            style={{
+                                                marginTop: "10px",
+                                                color: "#374151",
+                                                lineHeight: "1.7"
+                                            }}
+                                        >
+                                            {aiStrengths}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        <div>
+                            {aiSuggestion && (
+                                <>
+                                    <button
+                                        onClick={() => setShowSuggestion(!showSuggestion)}
+                                    >
+                                        {showSuggestion ? "▼" : "▶"} 💰 Prezzo
+                                    </button>
+
+                                    {showSuggestion && (
+                                        <p
+                                            style={{
+                                                marginTop: "10px",
+                                                color: "#374151",
+                                                lineHeight: "1.7"
+                                            }}
+                                        >
+                                            {aiSuggestion}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                        {/* {aiSuggestion && (
+                            <p style={{ marginTop: "10px" }}>
+                                💰 {displayedText}
+                                {isTyping && <span className="typing-cursor">|</span>}
+                            </p>
+                        )} */}
+
+                        <div>
+                            {aiDescription && (
+                                <>
+                                    <button
+                                        onClick={() => setShowDescription(!showDescription)}
+                                    >
+                                        {showDescription ? "▼" : "▶"} 📝 Descrizione
+                                    </button>
+
+                                    {showDescription && (
+                                        <p
+                                            style={{
+                                                marginTop: "10px",
+                                                color: "#374151",
+                                                lineHeight: "1.7"
+                                            }}
+                                        >
+                                            {aiDescription}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+
                     </div>
                 )}
 
 
-
-
-
-
             </div>
+
+
+            {isImageOpen && (
+                <div className="image-modal">
+                    <img
+                        src={product.image_url}
+                        alt="prodotto grande"
+                    />
+
+                    <button
+                        onClick={() => setIsImageOpen(false)}
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+
+
 
         </div>
     );
 }
 
-export default ProductDetail;
+export default ProductDetail; 
