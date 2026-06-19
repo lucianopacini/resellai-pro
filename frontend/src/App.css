@@ -119,18 +119,10 @@ button.password-btn {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-
   transition: box-shadow 0.2s ease;
-  /* 👈 più leggero */
-
   position: relative;
   overflow: hidden;
-
-
-
   contain-intrinsic-size: 260px;
-
-
   contain: layout paint;
 }
 

@@ -15,7 +15,7 @@ function ProductList({
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
                 gap: "20px",
-                marginTop: "20px"
+                marginTop: "20px",
             }}
         >
             {products.length === 0 ? (

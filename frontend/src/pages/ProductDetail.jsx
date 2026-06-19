@@ -100,6 +100,30 @@ function ProductDetail() {
         setAiIdealCustomer(null);
     }, [id]);
 
+    // Chiusura modal con tasto esc
+    useEffect(() => {
+
+        if (isImageOpen) {
+
+            const handleKeyDown = (e) => {
+
+                if (e.key === "Escape") {
+                    setIsImageOpen(false);
+                }
+
+            };
+
+            window.addEventListener("keydown", handleKeyDown);
+
+            return () => {
+                window.removeEventListener("keydown", handleKeyDown);
+            };
+        }
+
+    }, [isImageOpen]);
+
+
+
     // =========================
     // RENDER CONDITIONS
     // =========================
