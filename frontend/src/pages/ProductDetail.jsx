@@ -13,6 +13,7 @@ import {
     getAIStrengths,
     getAIIdealCustomer
 } from "../services/api";
+import { isNew, } from "../utils/dateUtils";
 
 function ProductDetail() {
     const { id } = useParams();
@@ -143,14 +144,6 @@ function ProductDetail() {
     // =========================
     // FUNCTIONS & HANDLERS
     // =========================
-
-    // Verifica se il prodotto è stato creato nelle ultime 24 ore
-    const isNew = (date) => {
-        const created = new Date(date);
-        const now = new Date();
-        const diff = (now - created) / (1000 * 60 * 60);
-        return diff < 24;
-    };
 
     // Avvia l'analisi AI del prodotto
     const handleAIAnalyze = async () => {

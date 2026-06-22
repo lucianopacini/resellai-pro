@@ -16,6 +16,7 @@ import { useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
 import ProductDetail from "./pages/ProductDetail";
 import { useNavigate } from "react-router-dom";
+import { isNew, } from "./utils/dateUtils";
 
 function App() {
 
@@ -337,18 +338,6 @@ function App() {
 
 
 
-
-  // Verifica se il prodotto è stato creato nelle ultime 24 ore
-  const isNew = (date) => {
-    const created = new Date(date);
-    const now = new Date();
-    const diff = (now - created) / (1000 * 60 * 60);
-    return diff < 24;
-  };
-
-
-
-
   const newProducts = filteredProducts.filter(
     (product) => isNew(product.created_at)
   );
@@ -506,28 +495,48 @@ function App() {
                   </select>
                 </div>
 
-                <p>
-                  Stai visualizzando {filteredProducts.length} prodotti
-                </p>
 
-                <div className="stats-box">
-                  <p>
-                    📦 Prodotti visualizzati: {totalProducts}
-                  </p>
 
-                  <p>
-                    🏷️ Brand diversi: {totalBrands}
-                  </p>
+                <div className="stats-wrapper">
+                  <h3 className="dashboard-title">📊 Dashboard</h3>
+                  <div className="stats-box">
 
-                  <p>
-                    📂 Categorie diverse: {totalCategories}
-                  </p>
+                    <div className="stat-card">
+                      📦
+                      <span className="stat-number">
+                        {totalProducts}
+                      </span>
+                      Prodotti
+                    </div>
 
-                  <p>
-                    ⭐ Prodotti nuovi: {totalNewProducts}
-                  </p>
+                    <div className="stat-card">
+                      🏷️
+                      <span className="stat-number">
+                        {totalBrands}
+                      </span>
+                      Brand
+                    </div>
 
+                    <div className="stat-card">
+                      📂
+                      <span className="stat-number">
+                        {totalCategories}
+                      </span>
+                      Categorie
+                    </div>
+
+                    <div className="stat-card">
+                      ⭐
+                      <span className="stat-number">
+                        {totalNewProducts}
+                      </span>
+                      New
+                    </div>
+
+                  </div>
                 </div>
+
+
               </>
             )}
 
