@@ -314,6 +314,50 @@ function App() {
     sortBy,
   ]);
 
+  // STATISTICHE
+  const totalProducts = filteredProducts.length;
+
+  const uniqueBrands = new Set(
+    filteredProducts.map(
+      (product) => product.brand
+    )
+  );
+
+  const totalBrands = uniqueBrands.size;
+
+  // STATISTICHE CATEGORIE
+  const uniqueCategories = new Set(
+    filteredProducts.map(
+      (product) => product.category
+    )
+  );
+
+  const totalCategories = uniqueCategories.size;
+
+
+
+
+
+  // Verifica se il prodotto è stato creato nelle ultime 24 ore
+  const isNew = (date) => {
+    const created = new Date(date);
+    const now = new Date();
+    const diff = (now - created) / (1000 * 60 * 60);
+    return diff < 24;
+  };
+
+
+
+
+  const newProducts = filteredProducts.filter(
+    (product) => isNew(product.created_at)
+  );
+
+  const totalNewProducts = newProducts.length;
+
+
+
+
 
 
   return (
@@ -465,6 +509,25 @@ function App() {
                 <p>
                   Stai visualizzando {filteredProducts.length} prodotti
                 </p>
+
+                <div className="stats-box">
+                  <p>
+                    📦 Prodotti visualizzati: {totalProducts}
+                  </p>
+
+                  <p>
+                    🏷️ Brand diversi: {totalBrands}
+                  </p>
+
+                  <p>
+                    📂 Categorie diverse: {totalCategories}
+                  </p>
+
+                  <p>
+                    ⭐ Prodotti nuovi: {totalNewProducts}
+                  </p>
+
+                </div>
               </>
             )}
 
