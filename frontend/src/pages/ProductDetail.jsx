@@ -52,6 +52,9 @@ function ProductDetail() {
     const [aiDescLoading, setAiDescLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
 
+    // Gestione errori
+    const [error, setError] = useState(null);
+
     // =========================
     // EFFECTS
     // =========================
@@ -147,6 +150,7 @@ function ProductDetail() {
 
     // Avvia l'analisi AI del prodotto
     const handleAIAnalyze = async () => {
+        setError(null);
         if (!product) return;
 
         // evita richieste doppie
@@ -173,14 +177,15 @@ function ProductDetail() {
             setAiIdealCustomer(customerData.idealCustomer);
 
         } catch (error) {
-            console.error(error);
-            setAiSuggestion("Errore AI");
-            setAiDescription("Errore AI");
+            setError("❌ Impossibile generare l'analisi AI. Riprova tra qualche secondo.");
+            console.log("SET ERROR ESEGUITO");
         } finally {
             setAiLoading(false);
             setAiDescLoading(false);
         }
     };
+
+
 
     // =========================
     // RETURN JSX
@@ -280,110 +285,113 @@ function ProductDetail() {
                             </p>
                         )}
 
-                        <div>
-                            {aiIdealCustomer && (
-                                <>
-                                    <button
-                                        onClick={() => setShowCustomer(!showCustomer)}
-                                    >
-                                        {showCustomer ? "▼" : "▶"} 👤 Cliente ideale
-                                    </button>
-
-                                    {showCustomer && (
-                                        <p
-                                            style={{
-                                                marginTop: "10px",
-                                                color: "#374151",
-                                                lineHeight: "1.7"
-                                            }}
+                        <div className="ai-actions">
+                            <div>
+                                {aiIdealCustomer && (
+                                    <>
+                                        <button
+                                            onClick={() => setShowCustomer(!showCustomer)}
                                         >
-                                            {aiIdealCustomer}
-                                        </p>
-                                    )}
-                                </>
-                            )}
+                                            {showCustomer ? "▼" : "▶"} 👤 Cliente ideale
+                                        </button>
+
+                                        {showCustomer && (
+                                            <p
+                                                style={{
+                                                    marginTop: "10px",
+                                                    color: "#374151",
+                                                    lineHeight: "1.7"
+                                                }}
+                                            >
+                                                {aiIdealCustomer}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+
+                            <div>
+                                {aiStrengths && (
+                                    <>
+                                        <button
+                                            onClick={() => setShowStrengths(!showStrengths)}
+                                        >
+                                            {showStrengths ? "▼" : "▶"} ⚡ Punti di forza
+                                        </button>
+
+                                        {showStrengths && (
+                                            <p
+                                                style={{
+                                                    marginTop: "10px",
+                                                    color: "#374151",
+                                                    lineHeight: "1.7"
+                                                }}
+                                            >
+                                                {aiStrengths}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            <div>
+                                {aiSuggestion && (
+                                    <>
+                                        <button
+                                            onClick={() => setShowSuggestion(!showSuggestion)}
+                                        >
+                                            {showSuggestion ? "▼" : "▶"} 💰 Prezzo
+                                        </button>
+
+                                        {showSuggestion && (
+                                            <p
+                                                style={{
+                                                    marginTop: "10px",
+                                                    color: "#374151",
+                                                    lineHeight: "1.7"
+                                                }}
+                                            >
+                                                {aiSuggestion}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            <div>
+                                {aiDescription && (
+                                    <>
+                                        <button
+                                            onClick={() => setShowDescription(!showDescription)}
+                                        >
+                                            {showDescription ? "▼" : "▶"} 📝 Descrizione
+                                        </button>
+
+                                        {showDescription && (
+                                            <p
+                                                style={{
+                                                    marginTop: "10px",
+                                                    color: "#374151",
+                                                    lineHeight: "1.7"
+                                                }}
+                                            >
+                                                {aiDescription}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
 
+                    </div>
 
-                        <div>
-                            {aiStrengths && (
-                                <>
-                                    <button
-                                        onClick={() => setShowStrengths(!showStrengths)}
-                                    >
-                                        {showStrengths ? "▼" : "▶"} ⚡ Punti di forza
-                                    </button>
+                )}
 
-                                    {showStrengths && (
-                                        <p
-                                            style={{
-                                                marginTop: "10px",
-                                                color: "#374151",
-                                                lineHeight: "1.7"
-                                            }}
-                                        >
-                                            {aiStrengths}
-                                        </p>
-                                    )}
-                                </>
-                            )}
-                        </div>
-
-                        <div>
-                            {aiSuggestion && (
-                                <>
-                                    <button
-                                        onClick={() => setShowSuggestion(!showSuggestion)}
-                                    >
-                                        {showSuggestion ? "▼" : "▶"} 💰 Prezzo
-                                    </button>
-
-                                    {showSuggestion && (
-                                        <p
-                                            style={{
-                                                marginTop: "10px",
-                                                color: "#374151",
-                                                lineHeight: "1.7"
-                                            }}
-                                        >
-                                            {aiSuggestion}
-                                        </p>
-                                    )}
-                                </>
-                            )}
-                        </div>
-                        {/* {aiSuggestion && (
-                            <p style={{ marginTop: "10px" }}>
-                                💰 {displayedText}
-                                {isTyping && <span className="typing-cursor">|</span>}
-                            </p>
-                        )} */}
-
-                        <div>
-                            {aiDescription && (
-                                <>
-                                    <button
-                                        onClick={() => setShowDescription(!showDescription)}
-                                    >
-                                        {showDescription ? "▼" : "▶"} 📝 Descrizione
-                                    </button>
-
-                                    {showDescription && (
-                                        <p
-                                            style={{
-                                                marginTop: "10px",
-                                                color: "#374151",
-                                                lineHeight: "1.7"
-                                            }}
-                                        >
-                                            {aiDescription}
-                                        </p>
-                                    )}
-                                </>
-                            )}
-                        </div>
-
-
+                {/* Messaggio di errore */}
+                {error && (
+                    <div className="error-message">
+                        {error}
                     </div>
                 )}
 

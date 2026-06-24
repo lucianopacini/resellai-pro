@@ -140,8 +140,6 @@ button.password-btn {
 
 .stat-number {
   font-weight: bold;
-
-
 }
 
 .dashboard-title {
@@ -180,7 +178,6 @@ button.password-btn {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-
 .product-card h3 {
   margin-top: 0;
   color: #5b3df5;
@@ -206,6 +203,14 @@ button.password-btn {
   margin-bottom: 20px;
   border: 1px solid #ddd;
 
+}
+
+.error-message {
+  color: rgb(213, 57, 57);
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  background-color: rgb(241, 182, 182);
 }
 
 .auth-row {
@@ -398,6 +403,13 @@ button:disabled {
   color: white;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.ai-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
 }
 
 
