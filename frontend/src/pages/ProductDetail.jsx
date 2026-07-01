@@ -11,11 +11,12 @@ import {
     getAITitle,
     getAIMarketScore,
     getAIStrengths,
-    getAIIdealCustomer
+    getAIIdealCustomer,
+    updateProduct
 } from "../services/api";
 import { isNew, } from "../utils/dateUtils";
 
-function ProductDetail() {
+function ProductDetail({ onProductUpdated }) {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -31,8 +32,7 @@ function ProductDetail() {
     const [isImageOpen, setIsImageOpen] = useState(false);
 
     // Stato animazione AI
-    const [displayedText, setDisplayedText] = useState("");
-    const [isTyping, setIsTyping] = useState(false);
+
 
     // Risultati AI 
     const [aiSuggestion, setAiSuggestion] = useState(null);
@@ -72,27 +72,7 @@ function ProductDetail() {
     }, [id]);
 
     // Effetto scrittura AI stile ChatGPT
-    useEffect(() => {
-        if (!aiSuggestion) return;
 
-        let index = 0;
-
-        setDisplayedText("");
-        setIsTyping(true);
-
-        const interval = setInterval(() => {
-            setDisplayedText(aiSuggestion.slice(0, index));
-            index++;
-
-            if (index > aiSuggestion.length) {
-                clearInterval(interval);
-                setIsTyping(false);
-            }
-        }, 20);
-
-        return () => clearInterval(interval);
-
-    }, [aiSuggestion]);
 
     // Resetta stato AI quando cambia prodotto
     useEffect(() => {
@@ -161,6 +141,7 @@ function ProductDetail() {
 
         try {
             const [priceData, descData, titleData, scoreData, strengthsData, customerData] = await Promise.all([
+
                 getAISuggestion(product),
                 getAIDescription(product),
                 getAITitle(product),
@@ -169,7 +150,19 @@ function ProductDetail() {
                 getAIIdealCustomer(product)
             ]);
 
-            setAiSuggestion(priceData.suggestion);
+            console.log(priceData.suggestion);
+            const aiData = JSON.parse(priceData.suggestion);
+            const productData = {
+                suggested_price: aiData.suggested_price,
+                price_min: aiData.price_min,
+                price_max: aiData.price_max,
+                motivation: aiData.motivation,
+            }
+            await updateProduct(id, productData);
+            onProductUpdated();
+
+            console.log("PRICE DATA:", priceData);
+            setAiSuggestion(aiData);
             setAiDescription(descData.description);
             setAiTitle(titleData.title);
             setAiMarketScore(scoreData.score);
@@ -178,14 +171,14 @@ function ProductDetail() {
 
         } catch (error) {
             setError("❌ Impossibile generare l'analisi AI. Riprova tra qualche secondo.");
-            console.log("SET ERROR ESEGUITO");
+            console.log(error);
         } finally {
             setAiLoading(false);
             setAiDescLoading(false);
+
+
         }
     };
-
-
 
     // =========================
     // RETURN JSX
@@ -345,15 +338,28 @@ function ProductDetail() {
                                         </button>
 
                                         {showSuggestion && (
-                                            <p
-                                                style={{
-                                                    marginTop: "10px",
-                                                    color: "#374151",
-                                                    lineHeight: "1.7"
-                                                }}
-                                            >
-                                                {aiSuggestion}
-                                            </p>
+                                            <>
+                                                <p
+
+                                                    style={{
+                                                        marginTop: "10px",
+                                                        color: "#374151",
+                                                        lineHeight: "1.7"
+                                                    }}
+                                                >
+                                                    💰 Prezzo suggerito: {aiSuggestion.suggested_price} €
+                                                </p>
+
+                                                <p>
+                                                    📈 Range:
+                                                    {aiSuggestion.price_min} € -
+                                                    {aiSuggestion.price_max} €
+                                                </p>
+
+                                                <p>
+                                                    💬 Motivazione: {aiSuggestion.motivation}
+                                                </p>
+                                            </>
                                         )}
                                     </>
                                 )}

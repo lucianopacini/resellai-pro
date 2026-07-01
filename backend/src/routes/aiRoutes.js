@@ -19,8 +19,14 @@ Categoria: ${product.category}
 Condizione: ${product.condition}
 Taglia: ${product.size}
 
-Rispondi in modo breve con fascia di prezzo e motivazione.
-`;
+Restituisci i dati in formato JSON con queste proprietà:
+suggested_price, price_min, price_max e motivation.
+
+suggested_price, price_min e price_max devono essere numeri interi.
+motivation deve essere una stringa.
+
+Restituisci esclusivamente un oggetto JSON valido, senza blocchi Markdown, senza json e senza testo aggiuntivo.
+        `;
 
         const response = await client.chat.completions.create({
             model: "gpt-4o-mini",
@@ -43,12 +49,12 @@ router.post("/generate-description", async (req, res) => {
         const prompt = `
     Scrivi una descrizione accattivante per vendere questo prodotto online.
 
-    Brand: ${product.brand}
-    Categoria: ${product.category}
-    Condizione: ${product.condition}
-    Taglia: ${product.size}
+            Brand: ${product.brand}
+        Categoria: ${product.category}
+        Condizione: ${product.condition}
+        Taglia: ${product.size}
 
-    Deve sembrare un annuncio reale (tipo Vinted/Subito), breve ma efficace.
+    Deve sembrare un annuncio reale(tipo Vinted / Subito), breve ma efficace.
     `;
 
         const response = await client.chat.completions.create({
@@ -73,7 +79,7 @@ router.post("/generate-title", async (req, res) => {
         const prompt = `
         Crea un titolo breve e accattivante per un annuncio marketplace.
 
-        Brand: ${product.brand}
+            Brand: ${product.brand}
         Categoria: ${product.category}
         Condizione: ${product.condition}
         Taglia: ${product.size}
@@ -103,15 +109,15 @@ router.post("/market-score", async (req, res) => {
         const prompt = `
         Analizza questo prodotto marketplace.
 
-        Brand: ${product.brand}
+            Brand: ${product.brand}
         Categoria: ${product.category}
         Condizione: ${product.condition}
         Taglia: ${product.size}
 
         Rispondi con:
         - probabilità di vendita
-        - appeal del brand
-        - breve motivazione
+            - appeal del brand
+                - breve motivazione
 
         Stile breve, moderno e realistico.
         `;
@@ -138,7 +144,7 @@ router.post("/product-strengths", async (req, res) => {
         const prompt = `
         Analizza questo prodotto marketplace.
 
-        Brand: ${product.brand}
+            Brand: ${product.brand}
         Categoria: ${product.category}
         Condizione: ${product.condition}
         Taglia: ${product.size}
@@ -170,14 +176,14 @@ router.post("/ideal-customer", async (req, res) => {
         const prompt = `
 Analizza questo prodotto marketplace.
 
-Brand: ${product.brand}
-Categoria: ${product.category}
-Condizione: ${product.condition}
-Taglia: ${product.size}
+            Brand: ${product.brand}
+        Categoria: ${product.category}
+        Condizione: ${product.condition}
+        Taglia: ${product.size}
 
 Identifica il cliente ideale per questo prodotto.
 
-Rispondi in massimo 3 punti elenco brevi e concreti.
+        Rispondi in massimo 3 punti elenco brevi e concreti.
 `;
 
         const response = await client.chat.completions.create({

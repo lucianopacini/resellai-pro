@@ -315,38 +315,34 @@ function App() {
     sortBy,
   ]);
 
-  // STATISTICHE
+  // DATI DERIVATI / STATISTICHE
   const totalProducts = filteredProducts.length;
-
   const uniqueBrands = new Set(
     filteredProducts.map(
       (product) => product.brand
     )
   );
-
   const totalBrands = uniqueBrands.size;
 
-  // STATISTICHE CATEGORIE
   const uniqueCategories = new Set(
     filteredProducts.map(
       (product) => product.category
     )
   );
-
   const totalCategories = uniqueCategories.size;
-
-
-
 
   const newProducts = filteredProducts.filter(
     (product) => isNew(product.created_at)
   );
-
   const totalNewProducts = newProducts.length;
 
-
-
-
+  const totalInventoryValue = filteredProducts.reduce(
+    (total, product) => {
+      console.log("🚀 PRODUCT", product);
+      return total + product.suggested_price;
+    },
+    0
+  );
 
 
   return (
@@ -496,7 +492,7 @@ function App() {
                 </div>
 
 
-
+                {/* Dashboard statistiche */}
                 <div className="stats-wrapper">
                   <h3 className="dashboard-title">📊 Dashboard</h3>
                   <div className="stats-box">
@@ -533,6 +529,14 @@ function App() {
                       New
                     </div>
 
+                    <div className="stat-card">
+                      💰
+                      <span className="stat-number">
+                        {totalInventoryValue}
+                      </span>
+                      Valore inventario
+                    </div>
+
                   </div>
                 </div>
 
@@ -560,7 +564,6 @@ function App() {
                 />
               )
             }
-
 
             {
               selectedProduct && (
@@ -605,7 +608,17 @@ function App() {
         }
       />
 
-      < Route path="/product/:id" element={< ProductDetail />} />
+      <Route
+        path="/product/:id"
+        element={
+          <ProductDetail
+            onProductUpdated={fetchProducts}
+          />
+        }
+      />
+
+
+
 
     </Routes >
 
