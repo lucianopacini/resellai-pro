@@ -459,3 +459,9 @@ button:disabled {
     transform: translateY(0);
   }
 }
+
+.footer {
+  margin-top: 33px;
+  font-size: 15px;
+  color: #8b5cf6;
+}
