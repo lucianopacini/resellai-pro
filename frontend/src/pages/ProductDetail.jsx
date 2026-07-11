@@ -84,6 +84,23 @@ function ProductDetail({ onProductUpdated }) {
         setAiIdealCustomer(null);
     }, [id]);
 
+
+    // useEffect(() => {
+    //     if (!product) return;
+
+    //     if (product.suggested_price) {
+
+    //         const savedAiSuggestion = {
+    //             suggested_price: product.suggested_price,
+    //             price_min: product.price_min,
+    //             price_max: product.price_max,
+    //             motivation: product.motivation,
+    //         }
+    //         setAiSuggestion(savedAiSuggestion);
+    //     }
+    // }, [product]);
+
+
     // Chiusura modal con tasto esc
     useEffect(() => {
 
@@ -129,6 +146,7 @@ function ProductDetail({ onProductUpdated }) {
     // =========================
 
     // Avvia l'analisi AI del prodotto
+    console.log("🚀 handleAIAnalyze partito");
     const handleAIAnalyze = async () => {
         setError(null);
         if (!product) return;
@@ -167,6 +185,7 @@ function ProductDetail({ onProductUpdated }) {
             setAiTitle(titleData.title);
             setAiMarketScore(scoreData.score);
             setAiStrengths(strengthsData.strengths);
+            console.log("🦁 IDEAL CUSTOMER:", customerData.idealCustomer);
             setAiIdealCustomer(customerData.idealCustomer);
 
         } catch (error) {
@@ -179,6 +198,28 @@ function ProductDetail({ onProductUpdated }) {
 
         }
     };
+
+
+
+
+
+
+
+    const restoreSavedAnalysis = () => {
+        if (!product) return;
+        if (product.suggested_price) {
+
+            const savedAiSuggestion = {
+                suggested_price: product.suggested_price,
+                price_min: product.price_min,
+                price_max: product.price_max,
+                motivation: product.motivation,
+            };
+            setAiSuggestion(savedAiSuggestion);
+        }
+    };
+
+
 
     // =========================
     // RETURN JSX
@@ -225,11 +266,24 @@ function ProductDetail({ onProductUpdated }) {
                 {/* Bottone AI */}
 
                 <button
-                    onClick={handleAIAnalyze}
+                    onClick={() => {
+
+                        if (product.suggested_price) {
+
+                            restoreSavedAnalysis();
+
+                        } else {
+
+                            handleAIAnalyze();
+
+                        }
+
+                    }}
                     disabled={aiLoading}
+
                     style={{
                         marginTop: "10px",
-                        background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+                        background: product.suggested_price ? "linear-gradient(135deg, #4338ca, #312e81)" : "linear-gradient(135deg, #6366f1, #4f46e5)",
                         color: "white",
                         border: "none",
                         padding: "12px",
@@ -241,8 +295,8 @@ function ProductDetail({ onProductUpdated }) {
                 >
                     {aiLoading
                         ? "🤖 AI sta analizzando..."
-                        : aiSuggestion && aiDescription
-                            ? "✅ Già analizzato"
+                        : product.suggested_price
+                            ? "📄 Visualizza analisi"
                             : "✨ Analizza prodotto"}
                 </button>
 
@@ -253,7 +307,7 @@ function ProductDetail({ onProductUpdated }) {
                         style={{
                             marginTop: "20px",
                             padding: "15px",
-                            background: "linear-gradient(135deg, #fff7ed, #ffedd5)",
+                            background: product.suggested_price ? "linear-gradient(135deg, #f5f3ff, #ede9fe)" : "linear-gradient(135deg, #fff7ed, #ffedd5)",
                             borderRadius: "12px"
                         }}>
                         <strong>🤖 AI Assistant</strong>
