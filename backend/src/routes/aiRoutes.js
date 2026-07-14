@@ -47,15 +47,24 @@ router.post("/generate-description", async (req, res) => {
         const { product } = req.body;
 
         const prompt = `
-    Scrivi una descrizione accattivante per vendere questo prodotto online.
+Analizza questo prodotto marketplace.
 
-            Brand: ${product.brand}
-        Categoria: ${product.category}
-        Condizione: ${product.condition}
-        Taglia: ${product.size}
+Brand: ${product.brand}
+Categoria: ${product.category}
+Condizione: ${product.condition}
+Taglia: ${product.size}
 
-    Deve sembrare un annuncio reale(tipo Vinted / Subito), breve ma efficace.
-    `;
+Scrivi una descrizione pronta per un annuncio di vendita.
+
+Regole:
+- Scrivi un unico testo fluido.
+- Non usare punti elenco.
+- Non usare asterischi o Markdown.
+- Non usare titoli.
+- Evidenzia il brand, la condizione e i punti di forza del prodotto in modo naturale.
+- Mantieni un tono professionale ma coinvolgente.
+- Lunghezza massima: 4-6 frasi.
+`;
 
         const response = await client.chat.completions.create({
             model: "gpt-4o-mini",
@@ -107,20 +116,32 @@ router.post("/market-score", async (req, res) => {
         const { product } = req.body;
 
         const prompt = `
-        Analizza questo prodotto marketplace.
+Analizza questo prodotto marketplace.
 
-            Brand: ${product.brand}
-        Categoria: ${product.category}
-        Condizione: ${product.condition}
-        Taglia: ${product.size}
+Brand: ${product.brand}
+Categoria: ${product.category}
+Condizione: ${product.condition}
+Taglia: ${product.size}
 
-        Rispondi con:
-        - probabilità di vendita
-            - appeal del brand
-                - breve motivazione
+Valuta il prodotto come farebbe un esperto di marketplace per l'abbigliamento usato.
 
-        Stile breve, moderno e realistico.
-        `;
+Scrivi un testo breve, ordinato e facile da leggere.
+
+Regole:
+- Non usare Markdown.
+- Non usare asterischi.
+- Non usare punti elenco.
+- Non usare titoli in grassetto.
+- Mantieni ogni sezione composta da 1 o 2 frasi.
+
+Organizza la risposta con queste tre sezioni:
+
+Probabilità di vendita:
+Appeal del brand:
+Breve motivazione:
+
+Usa un tono professionale, naturale e realistico.
+`;
 
         const response = await client.chat.completions.create({
             model: "gpt-4o-mini",
@@ -142,17 +163,31 @@ router.post("/product-strengths", async (req, res) => {
         const { product } = req.body;
 
         const prompt = `
-        Analizza questo prodotto marketplace.
+Analizza questo prodotto destinato alla vendita su un marketplace.
 
-            Brand: ${product.brand}
-        Categoria: ${product.category}
-        Condizione: ${product.condition}
-        Taglia: ${product.size}
+Brand: ${product.brand}
+Categoria: ${product.category}
+Condizione: ${product.condition}
+Taglia: ${product.size}
 
-        Elenca massimo 3 punti di forza che rendono il prodotto interessante per un potenziale acquirente.
+Elenca al massimo 3 punti di forza che rendono questo prodotto interessante per un potenziale acquirente.
 
-        Rispondi in modo breve usando punti elenco.
-        `;
+Regole:
+- Scrivi in italiano.
+- Usa un linguaggio naturale e professionale.
+- Non usare Markdown.
+- Non usare asterischi (**).
+- Non usare elenchi puntati o numerati.
+- Ogni punto di forza deve essere composto da un breve titolo seguito da una breve spiegazione.
+
+Esempio di formato:
+
+Qualità del marchio: Brand riconosciuto e apprezzato per affidabilità e stile.
+
+Condizioni eccellenti: Il capo è in ottimo stato e pronto per essere utilizzato.
+
+Taglia ricercata: La taglia disponibile può risultare interessante per una fascia specifica di acquirenti.
+`;
 
         const response = await client.chat.completions.create({
             model: "gpt-4o-mini",
@@ -174,16 +209,31 @@ router.post("/ideal-customer", async (req, res) => {
         const { product } = req.body;
 
         const prompt = `
-Analizza questo prodotto marketplace.
+Analizza questo prodotto destinato alla vendita su un marketplace.
 
-            Brand: ${product.brand}
-        Categoria: ${product.category}
-        Condizione: ${product.condition}
-        Taglia: ${product.size}
+Brand: ${product.brand}
+Categoria: ${product.category}
+Condizione: ${product.condition}
+Taglia: ${product.size}
 
-Identifica il cliente ideale per questo prodotto.
+Descrivi il cliente ideale per questo prodotto.
 
-        Rispondi in massimo 3 punti elenco brevi e concreti.
+Regole:
+- Scrivi in italiano.
+- Usa un linguaggio naturale e professionale.
+- Non usare Markdown.
+- Non usare asterischi (**).
+- Non usare elenchi puntati o numerati.
+- Descrivi al massimo 3 tipologie di clienti.
+- Per ogni tipologia scrivi un breve titolo seguito da una breve spiegazione.
+
+Esempio:
+
+Appassionati di sport: Persone che cercano capi tecnici e confortevoli per l'attività fisica.
+
+Persone di corporatura robusta: Clienti che necessitano di taglie ampie senza rinunciare allo stile.
+
+Amanti del brand: Consumatori che apprezzano la qualità e la reputazione del marchio.
 `;
 
         const response = await client.chat.completions.create({

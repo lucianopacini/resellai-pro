@@ -184,6 +184,7 @@ function ProductDetail({ onProductUpdated }) {
             setAiDescription(descData.description);
             setAiTitle(titleData.title);
             setAiMarketScore(scoreData.score);
+            console.log("SONO IL GRANDE LUCIANO", strengthsData.strengths);
             setAiStrengths(strengthsData.strengths);
             console.log("🦁 IDEAL CUSTOMER:", customerData.idealCustomer);
             setAiIdealCustomer(customerData.idealCustomer);
@@ -251,9 +252,9 @@ function ProductDetail({ onProductUpdated }) {
 
                 <h1 className="product-title">{product.brand}</h1>
 
-                {isNew(product.created_at) && (
+                {/* {isNew(product.created_at) && (
                     <span className="badge-new">NUOVO</span>
-                )}
+                )} */}
 
                 <p><strong>Categoria:</strong> {product.category}</p>
                 <p><strong>Taglia:</strong> {product.size}</p>

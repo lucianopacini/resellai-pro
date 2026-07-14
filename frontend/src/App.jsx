@@ -347,292 +347,297 @@ function App() {
 
   return (
     <>
+      <div className="app-container">
 
-      {/* ================= HEADER ================= */}
 
-      <h1>ResellAI Pro</h1>
+        {/* ================= HEADER ================= */}
 
-      <p className="tagline"> Il tuo assistente AI per il reselling</p>
+        <h1>ResellAI Pro</h1>
 
-      <div className="user-card">
-        {loggedUser ? (
-          <div className="user-info">
-            👤 Benvenuto, <span className="username">{loggedUser.email}</span>
-            <button onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        ) : (
-          <p>🔒 Accedi o registrati per iniziare.</p>
-        )}
-      </div>
+        <p className="tagline"> Il tuo assistente AI per il reselling</p>
 
-      <Routes>
+        <div className="user-card">
+          {loggedUser ? (
+            <div className="user-info">
+              👤 Benvenuto, <span className="username">{loggedUser.email}</span>
+              <button onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          ) : (
+            <p>🔒 Accedi o registrati per iniziare.</p>
+          )}
+        </div>
 
-        <Route
-          path="/"
-          element={
-            <div>
+        <Routes>
 
-              {/* ================= AUTH SECTION ================= */}
+          <Route
+            path="/"
+            element={
+              <div className="page-content">
 
-              <div className="auth-section">
+                {/* ================= AUTH SECTION ================= */}
                 {!loggedUser && (
-                  <div>
-                    <h2>Registrazione</h2>
 
-                    <div className="auth-row">
+                  <div className="auth-section">
+                    <div>
+                      <h2>Registrazione</h2>
 
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
+                      <div className="auth-row">
 
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
 
-                      <button
-                        className="password-btn"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? "🙈" : "👁️"}
-                      </button>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
 
-                      <button onClick={handleSignup}>Registrati</button>
-                      <button onClick={handleLogin}>Accedi</button>
+                        <button
+                          className="password-btn"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? "🙈" : "👁️"}
+                        </button>
 
+                        <button onClick={handleSignup}>Registrati</button>
+                        <button onClick={handleLogin}>Accedi</button>
+
+                      </div>
                     </div>
                   </div>
 
                 )}
-              </div>
+                {/* </div> */}
 
-              {loggedUser && (
-                <>
-                  <p className="subtitle">
-                    {editingProduct
-                      ? "Aggiorna i dati del prodotto selezionato"
-                      : "Compila il form per aggiungere un nuovo prodotto"}
-                  </p>
-
-                  {!editingProduct && (
-                    <p className="upload-tip">
-                      📸 Per risultati migliori usa foto verticali e ben illuminate.
+                {loggedUser && (
+                  <>
+                    <p className="subtitle">
+                      {editingProduct
+                        ? "Aggiorna i dati del prodotto selezionato"
+                        : "Compila il form per aggiungere un nuovo prodotto"}
                     </p>
-                  )}
-                </>
-              )}
 
-              {loading && <p>🔄 Aggiornamento prodotti...</p>}
+                    {!editingProduct && (
+                      <p className="upload-tip">
+                        📸 Per risultati migliori usa foto verticali e ben illuminate.
+                      </p>
+                    )}
+                  </>
+                )}
 
-
-              {/* ================= FORM PRODOTTO ================= */}
-
-              {loggedUser && (
-                <ProductForm
-                  handleSubmit={handleSubmit}
-                  handleImageChange={handleImageChange}
-                  preview={preview}
-                  formData={formData}
-                  handleChange={handleChange}
-                  editingProduct={editingProduct}
-                  handleCancelEdit={handleCancelEdit}
-                  loading={loading}
-                  fileInputRef={fileInputRef}
-                  firstInputRef={firstInputRef}
-                />
-
-              )}
+                {loading && <p>🔄 Aggiornamento prodotti...</p>}
 
 
-              {/* ================= FEEDBACK ================= */}
+                {/* ================= FORM PRODOTTO ================= */}
 
-              {successMessage && <p>{successMessage}</p>}
-
-
-              {/* ================= FILTRI ================= */}
-
-              {loggedUser && (
-                <>
-                  <h2>
-                    Prodotti salvati ({filteredProducts.length})
-                  </h2>
-
-                  <div className="filters">
-                    <input
-                      className="search-input"
-                      type="text"
-                      placeholder="Cerca per brand"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-
-                    <input
-                      className="search-input"
-                      type="text"
-                      placeholder="Cerca per categoria"
-                      value={categorySearch}
-                      onChange={(e) => setCategorySearch(e.target.value)}
-                    />
-
-                    <select
-                      className="sort-select"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                    >
-                      <option value="newest">Più recenti</option>
-                      <option value="oldest">Più vecchi</option>
-                      <option value="brand-asc">Brand A-Z</option>
-                      <option value="brand-desc">Brand Z-A</option>
-                    </select>
-                  </div>
-
-
-                  {/* Dashboard statistiche */}
-                  <div className="stats-wrapper">
-                    <h3 className="dashboard-title">📊 Dashboard</h3>
-                    <div className="stats-box">
-
-                      <div className="stat-card">
-                        📦
-                        <span className="stat-number">
-                          {totalProducts}
-                        </span>
-                        Prodotti
-                      </div>
-
-                      <div className="stat-card">
-                        🏷️
-                        <span className="stat-number">
-                          {totalBrands}
-                        </span>
-                        Brand
-                      </div>
-
-                      <div className="stat-card">
-                        📂
-                        <span className="stat-number">
-                          {totalCategories}
-                        </span>
-                        Categorie
-                      </div>
-
-                      <div className="stat-card">
-                        ⭐
-                        <span className="stat-number">
-                          {totalNewProducts}
-                        </span>
-                        New
-                      </div>
-
-                      <div className="stat-card">
-                        💰
-                        <span className="stat-number">
-                          {totalInventoryValue}
-                        </span>
-                        Valore inventario
-                      </div>
-
-                    </div>
-                  </div>
-
-
-                </>
-              )}
-
-
-
-              {/* ================= LISTA PRODOTTI ================= */}
-
-              {
-                loggedUser && (
-                  <ProductList
-                    products={filteredProducts}
-                    onDelete={handleDeleteProduct}
-                    onEdit={(product) => {
-                      setEditingProduct(product);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    onCancelEdit={handleCancelEdit}
+                {loggedUser && (
+                  <ProductForm
+                    handleSubmit={handleSubmit}
+                    handleImageChange={handleImageChange}
+                    preview={preview}
+                    formData={formData}
+                    handleChange={handleChange}
                     editingProduct={editingProduct}
+                    handleCancelEdit={handleCancelEdit}
                     loading={loading}
-                    onSelect={(product) => setSelectedProduct(product)}
+                    fileInputRef={fileInputRef}
+                    firstInputRef={firstInputRef}
                   />
-                )
-              }
 
-              {
-                selectedProduct && (
-                  <div
-                    className={`modal-overlay open`}
-                    onClick={() => setSelectedProduct(null)}
-                  >
-                    <div
-                      className={`modal open`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                )}
 
-                      <img
-                        src={selectedProduct.image_url}
-                        alt="prodotto"
-                        className="modal-img"
+
+                {/* ================= FEEDBACK ================= */}
+
+                {successMessage && <p>{successMessage}</p>}
+
+
+                {/* ================= FILTRI ================= */}
+
+                {loggedUser && (
+                  <>
+                    <h2>
+                      Prodotti salvati ({filteredProducts.length})
+                    </h2>
+
+                    <div className="filters">
+                      <input
+                        className="search-input"
+                        type="text"
+                        placeholder="Cerca per brand"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                       />
 
-                      <h2>{selectedProduct.brand}</h2>
-                      <p><strong>Categoria:</strong> {selectedProduct.category}</p>
-                      <p><strong>Taglia:</strong> {selectedProduct.size}</p>
-                      <p><strong>Condizione:</strong> {selectedProduct.condition}</p>
+                      <input
+                        className="search-input"
+                        type="text"
+                        placeholder="Cerca per categoria"
+                        value={categorySearch}
+                        onChange={(e) => setCategorySearch(e.target.value)}
+                      />
 
-                      <button onClick={() => setSelectedProduct(null)}>
-                        Chiudi
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          navigate(`/product/${selectedProduct.id}`);
-                        }}
+                      <select
+                        className="sort-select"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
                       >
-                        Vai alla pagina →
-                      </button>
-
+                        <option value="newest">Più recenti</option>
+                        <option value="oldest">Più vecchi</option>
+                        <option value="brand-asc">Brand A-Z</option>
+                        <option value="brand-desc">Brand Z-A</option>
+                      </select>
                     </div>
-                  </div>
-                )
-              }
-
-            </div >
-          }
-        />
-
-        <Route
-          path="/product/:id"
-          element={
-            <ProductDetail
-              onProductUpdated={fetchProducts}
-            />
-          }
-        />
 
 
+                    {/* Dashboard statistiche */}
+                    <div className="stats-wrapper">
+                      <h3 className="dashboard-title">📊 Dashboard</h3>
+                      <div className="stats-box">
+
+                        <div className="stat-card">
+                          📦
+                          <span className="stat-number">
+                            {totalProducts}
+                          </span>
+                          Prodotti
+                        </div>
+
+                        <div className="stat-card">
+                          🏷️
+                          <span className="stat-number">
+                            {totalBrands}
+                          </span>
+                          Brand
+                        </div>
+
+                        <div className="stat-card">
+                          📂
+                          <span className="stat-number">
+                            {totalCategories}
+                          </span>
+                          Categorie
+                        </div>
+
+                        <div className="stat-card">
+                          ⭐
+                          <span className="stat-number">
+                            {totalNewProducts}
+                          </span>
+                          New
+                        </div>
+
+                        <div className="stat-card">
+                          💰
+                          <span className="stat-number">
+                            {totalInventoryValue}
+                          </span>
+                          Valore inventario
+                        </div>
+
+                      </div>
+                    </div>
 
 
-      </Routes >
+                  </>
+                )}
 
 
 
-      <footer className="footer">
-        <p>© 2026 ResellAI Pro</p>
-        <p>Developed by Luciano Pacini</p>
-        <p>Powered by React • Node.js • Supabase • OpenAI</p>
+                {/* ================= LISTA PRODOTTI ================= */}
 
-      </footer>
+                {
+                  loggedUser && (
+                    <ProductList
+                      products={filteredProducts}
+                      onDelete={handleDeleteProduct}
+                      onEdit={(product) => {
+                        setEditingProduct(product);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      onCancelEdit={handleCancelEdit}
+                      editingProduct={editingProduct}
+                      loading={loading}
+                      onSelect={(product) => setSelectedProduct(product)}
+                    />
+                  )
+                }
 
+                {
+                  selectedProduct && (
+                    <div
+                      className={`modal-overlay open`}
+                      onClick={() => setSelectedProduct(null)}
+                    >
+                      <div
+                        className={`modal open`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+
+                        <img
+                          src={selectedProduct.image_url}
+                          alt="prodotto"
+                          className="modal-img"
+                        />
+
+                        <h2>{selectedProduct.brand}</h2>
+                        <p><strong>Categoria:</strong> {selectedProduct.category}</p>
+                        <p><strong>Taglia:</strong> {selectedProduct.size}</p>
+                        <p><strong>Condizione:</strong> {selectedProduct.condition}</p>
+
+                        <button onClick={() => setSelectedProduct(null)}>
+                          Chiudi
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            navigate(`/product/${selectedProduct.id}`);
+                          }}
+                        >
+                          Vai alla pagina →
+                        </button>
+
+                      </div>
+                    </div>
+                  )
+                }
+
+              </div >
+            }
+          />
+
+          <Route
+            path="/product/:id"
+            element={
+              <ProductDetail
+                onProductUpdated={fetchProducts}
+              />
+            }
+          />
+
+
+
+
+        </Routes >
+
+
+
+        <footer className="footer">
+
+          <p>© 2026 ResellAI Pro</p>
+          <p>Developed by Luciano Pacini</p>
+          <p>Powered by React • Node.js • Supabase • OpenAI</p>
+
+
+        </footer>
+      </div>
 
 
     </>
