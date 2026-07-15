@@ -230,15 +230,13 @@ function ProductDetail({ onProductUpdated }) {
         <div className="product-detail">
 
             {/* IMMAGINE PRODOTTO */}
-            <div>
+            <div className="detail-image">
                 {product.image_url && (
                     <img
+                        className="product-detail-image"
                         src={product.image_url}
                         alt="prodotto"
-                        style={{
-                            width: "100%",
-                            borderRadius: "12px"
-                        }}
+
                         onClick={() => setIsImageOpen(true)}
                     />
                 )}
