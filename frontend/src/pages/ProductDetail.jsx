@@ -1,7 +1,4 @@
-// =========================
-// IMPORT
-// =========================
-
+// ===== IMPORT =====
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
@@ -20,19 +17,13 @@ function ProductDetail({ onProductUpdated }) {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    // ========================= 
-    // STATE
-    // =========================
-
+    // ===== STATE =====
     // Stato prodotto
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // Zoom immagine dettaglio
     const [isImageOpen, setIsImageOpen] = useState(false);
-
-    // Stato animazione AI
-
 
     // Risultati AI 
     const [aiSuggestion, setAiSuggestion] = useState(null);
@@ -55,24 +46,17 @@ function ProductDetail({ onProductUpdated }) {
     // Gestione errori
     const [error, setError] = useState(null);
 
-    // =========================
-    // EFFECTS
-    // =========================
-
+    // ===== EFFECTS =====
     // Recupera il prodotto corrente dal database
     useEffect(() => {
         const fetchProduct = async () => {
             const data = await getProductById(id);
-            console.log("PRODOTTO:", data); // 👈 debug utile
             setProduct(data);
             setLoading(false);
         };
 
         fetchProduct();
     }, [id]);
-
-    // Effetto scrittura AI stile ChatGPT
-
 
     // Resetta stato AI quando cambia prodotto
     useEffect(() => {
@@ -83,23 +67,6 @@ function ProductDetail({ onProductUpdated }) {
         setAiStrengths(null);
         setAiIdealCustomer(null);
     }, [id]);
-
-
-    // useEffect(() => {
-    //     if (!product) return;
-
-    //     if (product.suggested_price) {
-
-    //         const savedAiSuggestion = {
-    //             suggested_price: product.suggested_price,
-    //             price_min: product.price_min,
-    //             price_max: product.price_max,
-    //             motivation: product.motivation,
-    //         }
-    //         setAiSuggestion(savedAiSuggestion);
-    //     }
-    // }, [product]);
-
 
     // Chiusura modal con tasto esc
     useEffect(() => {
@@ -123,10 +90,7 @@ function ProductDetail({ onProductUpdated }) {
 
     }, [isImageOpen]);
 
-    // =========================
-    // RENDER CONDITIONS
-    // =========================
-
+    // ===== RENDER CONDITIONS =====
     if (loading) {
         return <p style={{ padding: "20px" }}>Caricamento...</p>;
     }
@@ -141,12 +105,8 @@ function ProductDetail({ onProductUpdated }) {
         );
     }
 
-    // =========================
-    // FUNCTIONS & HANDLERS
-    // =========================
-
+    // ===== FUNCTIONS & HANDLERS =====
     // Avvia l'analisi AI del prodotto
-    console.log("🚀 handleAIAnalyze partito");
     const handleAIAnalyze = async () => {
         setError(null);
         if (!product) return;
@@ -195,17 +155,10 @@ function ProductDetail({ onProductUpdated }) {
         } finally {
             setAiLoading(false);
             setAiDescLoading(false);
-
-
         }
     };
 
-
-
-
-
-
-
+    // Ripristina un'analisi AI già salvata nel database
     const restoreSavedAnalysis = () => {
         if (!product) return;
         if (product.suggested_price) {
@@ -221,15 +174,10 @@ function ProductDetail({ onProductUpdated }) {
     };
 
 
-
-    // =========================
-    // RETURN JSX
-    // =========================
-
     return (
         <div className="product-detail">
 
-            {/* IMMAGINE PRODOTTO */}
+            {/* ===== IMMAGINE PRODOTTO ===== */}
             <div className="detail-image">
                 {product.image_url && (
                     <img
@@ -242,17 +190,13 @@ function ProductDetail({ onProductUpdated }) {
                 )}
             </div>
 
-            {/* DETTAGLI PRODOTTO + AI */}
+            {/* ===== DETTAGLI PRODOTTO + AI ===== */}
             <div className="product-info">
                 <button className="back-btn" onClick={() => navigate("/")}>
                     ← Torna indietro
                 </button>
 
                 <h1 className="product-title">{product.brand}</h1>
-
-                {/* {isNew(product.created_at) && (
-                    <span className="badge-new">NUOVO</span>
-                )} */}
 
                 <p><strong>Categoria:</strong> {product.category}</p>
                 <p><strong>Taglia:</strong> {product.size}</p>
@@ -263,7 +207,6 @@ function ProductDetail({ onProductUpdated }) {
                 </p>
 
                 {/* Bottone AI */}
-
                 <button
                     onClick={() => {
 
@@ -454,9 +397,9 @@ function ProductDetail({ onProductUpdated }) {
                     </div>
                 )}
 
-
             </div>
 
+            {/* ===== MODAL IMMAGINE ===== */}
             {isImageOpen && (
                 <div
                     className="image-modal"
@@ -479,6 +422,5 @@ function ProductDetail({ onProductUpdated }) {
         </div>
     );
 }
-
 
 export default ProductDetail;
