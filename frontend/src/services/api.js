@@ -1,6 +1,6 @@
 import { supabase } from "./supabaseClient";
 
-const API_URL = "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const createProduct = async (productData) => {
     const response = await fetch(`${API_URL}/products`, {
@@ -101,7 +101,7 @@ export const getAIDescription = async (product) => {
 };
 
 export const getAITitle = async (product) => {
-    const response = await fetch("http://localhost:3000/api/ai/generate-title", {
+    const response = await fetch(`${API_URL}/api/ai/generate-title`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -113,7 +113,7 @@ export const getAITitle = async (product) => {
 };
 
 export const getAIMarketScore = async (product) => {
-    const response = await fetch("http://localhost:3000/api/ai/market-score", {
+    const response = await fetch(`${API_URL}/api/ai/market-score`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -126,7 +126,7 @@ export const getAIMarketScore = async (product) => {
 
 export const getAIStrengths = async (product) => {
     const response = await fetch(
-        "http://localhost:3000/api/ai/product-strengths",
+        `${API_URL}/api/ai/product-strengths`,
         {
             method: "POST",
             headers: {
@@ -141,7 +141,7 @@ export const getAIStrengths = async (product) => {
 
 export const getAIIdealCustomer = async (product) => {
     const response = await fetch(
-        "http://localhost:3000/api/ai/ideal-customer",
+        `${API_URL}/api/ai/ideal-customer`,
         {
             method: "POST",
             headers: {

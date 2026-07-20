@@ -346,13 +346,21 @@ function ProductDetail({ onProductUpdated }) {
                                                     💰 Prezzo suggerito: {aiSuggestion.suggested_price} €
                                                 </p>
 
-                                                <p>
-                                                    📈 Range:
-                                                    {aiSuggestion.price_min} € -
-                                                    {aiSuggestion.price_max} €
+                                                <p
+                                                    style={{
+                                                        color: "#374151",
+                                                        lineHeight: "1.7"
+                                                    }}
+                                                >
+                                                    📈 Range: da {aiSuggestion.price_min} € a {aiSuggestion.price_max} €
                                                 </p>
 
-                                                <p>
+                                                <p
+                                                    style={{
+                                                        color: "#374151",
+                                                        lineHeight: "1.7"
+                                                    }}
+                                                >
                                                     💬 Motivazione: {aiSuggestion.motivation}
                                                 </p>
                                             </>
