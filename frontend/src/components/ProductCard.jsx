@@ -12,7 +12,7 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
     const isNew = () => {
         const created = new Date(product.created_at);
         const now = new Date();
-        const diff = (now - created) / (1000 * 60 * 60); // ore
+        const diff = (now - created) / (1000 * 60 * 60);
         return diff < 24;
     };
 
@@ -67,7 +67,7 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
             <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
                 <button
                     onClick={(e) => {
-                        e.stopPropagation();   // 👈 QUESTO È IL FIX
+                        e.stopPropagation();
                         onDelete(product.id);
                     }}
                     disabled={loading}
@@ -104,7 +104,7 @@ function ProductCard({ product, onDelete, onEdit, onCancelEdit, editingProduct, 
 
                 <button
                     onClick={(e) => {
-                        e.stopPropagation(); // 🔥 fondamentale
+                        e.stopPropagation();
                         navigate(`/product/${product.id}`);
                     }}
                     style={{

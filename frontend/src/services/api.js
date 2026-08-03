@@ -2,11 +2,21 @@ import { supabase } from "./supabaseClient";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+
 export const createProduct = async (productData) => {
+    const { data } = await supabase.auth.getSession();
+
+    if (!data.session) {
+        // gestisco l'errore
+    }
+
+    const token = data.session.access_token;
+
     const response = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(productData),
     });
@@ -14,30 +24,58 @@ export const createProduct = async (productData) => {
     return response.json();
 };
 
-export const getProducts = async () => {
-    const response = await fetch(`${API_URL}/products`);
-    return response.json();
-};
 
-export const deleteProduct = async (id) => {
-    const response = await fetch(`${API_URL}/products/${id}`, {
-        method: "DELETE",
+export const getProducts = async () => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session.access_token;
+
+    const response = await fetch(`${API_URL}/products`, {
+
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+
     });
 
     return response.json();
 };
 
+
+export const deleteProduct = async (id) => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session.access_token;
+
+    const response = await fetch(`${API_URL}/products/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+
+    });
+
+    return response.json();
+};
+
+
 export const updateProduct = async (id, productData) => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session.access_token;
+
     const response = await fetch(`${API_URL}/products/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(productData),
     });
 
     return response.json();
 };
+
+
 
 export const uploadImage = async (file) => {
     const fileName = `${Date.now()}-${file.name}`;

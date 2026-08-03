@@ -1,5 +1,11 @@
 const supabase = require("../config/supabaseClient");
 
+const {
+    filterProductFields,
+    validateCreateProduct,
+    validateUpdateProduct,
+} = require("../utils/productValidation");
+
 const getProducts = async (req, res) => {
     const { data, error } = await supabase
         .from("products")
@@ -13,35 +19,18 @@ const getProducts = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    const {
-        user_id,
-        image_url,
-        category,
-        brand,
-        size,
-        condition,
-        suggested_price,
-        price_min,
-        price_max,
-        motivation,
-        visual_analysis,
-    } = req.body;
 
-    const { data, error } = await supabase.from("products").insert([
-        {
-            user_id,
-            image_url,
-            category,
-            brand,
-            size,
-            condition,
-            suggested_price,
-            price_min,
-            price_max,
-            motivation,
-            visual_analysis,
-        },
-    ]);
+    const productData = filterProductFields(req.body);
+
+    const validation = validateCreateProduct(productData);
+
+    if (!validation.valid) {
+        return res.status(400).json({
+            error: validation.message,
+        });
+    }
+
+    const { data, error } = await supabase.from("products").insert([productData]);
 
     if (error) {
         return res.status(500).json({ error: error.message });
@@ -73,9 +62,19 @@ const deleteProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     const { id } = req.params;
 
+    const productData = filterProductFields(req.body);
+
+    const validation = validateUpdateProduct(productData);
+
+    if (!validation.valid) {
+        return res.status(400).json({
+            error: validation.message,
+        });
+    }
+
     const { error } = await supabase
         .from("products")
-        .update(req.body)
+        .update(productData)
         .eq("id", id);
 
     if (error) {

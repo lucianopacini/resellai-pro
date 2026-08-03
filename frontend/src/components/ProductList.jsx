@@ -7,7 +7,7 @@ function ProductList({
     onCancelEdit,
     editingProduct,
     loading,
-    onSelect   // 👈 DEVE ESSERCI
+    onSelect
 }) {
     return (
         <div
@@ -30,7 +30,7 @@ function ProductList({
                         onCancelEdit={onCancelEdit}
                         editingProduct={editingProduct}
                         loading={loading}
-                        onSelect={onSelect}   // 👈 QUESTO 
+                        onSelect={onSelect}
 
                     />
                 ))
