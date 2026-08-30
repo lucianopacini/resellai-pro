@@ -191,7 +191,11 @@ function App() {
       password,
     });
 
-    if (error) return alert("Errore nel login");
+    if (error) {
+      console.error("Errore login:", error);
+      alert(error.message);
+      return;
+    }
 
     setLoggedUser(data.user);
     await fetchProducts();

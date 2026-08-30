@@ -7,9 +7,11 @@ const {
 } = require("../utils/productValidation");
 
 const getProducts = async (req, res) => {
+
     const { data, error } = await supabase
         .from("products")
-        .select("*");
+        .select("*")
+        .eq("user_id", req.user.id);
 
     if (error) {
         return res.status(500).json({ error: error.message });
@@ -30,6 +32,8 @@ const createProduct = async (req, res) => {
         });
     }
 
+    productData.user_id = req.user.id;
+
     const { data, error } = await supabase.from("products").insert([productData]);
 
     if (error) {
@@ -45,13 +49,21 @@ const createProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     const { id } = req.params;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from("products")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", req.user.id)
+        .select();
 
     if (error) {
         return res.status(500).json({ error: error.message });
+    }
+
+    if (data.length === 0) {
+        return res.status(403).json({
+            error: "Non puoi eliminare questo prodotto.",
+        });
     }
 
     res.json({
@@ -72,13 +84,21 @@ const updateProduct = async (req, res) => {
         });
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from("products")
         .update(productData)
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", req.user.id)
+        .select();
 
     if (error) {
         return res.status(500).json({ error: error.message });
+    }
+
+    if (data.length === 0) {
+        return res.status(403).json({
+            error: "Non puoi modificare questo prodotto.",
+        });
     }
 
     res.json({ message: "Prodotto aggiornato con successo" });

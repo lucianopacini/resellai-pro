@@ -7,7 +7,7 @@
 
 ResellAI Pro è un'applicazione Full Stack progettata per aiutare gli utenti nella vendita di capi di abbigliamento usati attraverso il supporto dell'intelligenza artificiale.
 
-L'utente può inserire le informazioni del prodotto, caricare un'immagine e ottenere una valutazione AI completa, comprensiva di prezzo suggerito, fascia di prezzo, descrizione ottimizzata, punti di forza e cliente ideale.
+L'utente può inserire le informazioni del prodotto e caricare un'immagine. L'analisi AI attuale utilizza i dati testuali del prodotto (brand, categoria, condizione e taglia) per generare prezzo suggerito, fascia di prezzo, descrizione ottimizzata, punti di forza e cliente ideale.
 
 Il progetto è stato sviluppato con React, Node.js, Express, Supabase e OpenAI API per offrire un'esperienza semplice, moderna e intuitiva.
 
@@ -144,6 +144,7 @@ Utilizzata per generare automaticamente l'analisi AI dei prodotti.
 - [ ] Migliorare ulteriormente la qualità delle analisi AI.
 - [ ] Aggiungere statistiche e dashboard personali.
 - [ ] Consentire il caricamento di più immagini per prodotto.
+- [ ] Implementare l'analisi visiva delle immagini tramite AI.
 - [ ] Implementare notifiche e preferiti.
 - [ ] Migliorare ulteriormente l'interfaccia utente e l'esperienza d'uso.
 - [ ] Migliorare continuamente il progetto attraverso nuove funzionalità e ottimizzazioni.

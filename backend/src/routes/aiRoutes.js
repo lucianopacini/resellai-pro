@@ -1,3 +1,5 @@
+const authMiddleware = require("../middleware/authMiddleware");
+
 const express = require("express");
 const OpenAI = require("openai");
 
@@ -5,261 +7,106 @@ const router = express.Router();
 
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
+    timeout: 30000,
 });
 
-router.post("/suggest-price", async (req, res) => {
-    try {
-        const { product } = req.body;
+const callOpenAI = async (prompt, json = false) => {
 
-        const prompt = `
-Suggerisci un prezzo per questo prodotto:
-Brand: ${product.brand}
-Categoria: ${product.category}
-Condizione: ${product.condition}
-Taglia: ${product.size}
+    const options = {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+    };
 
-Restituisci i dati in formato JSON con queste proprietà:
-suggested_price, price_min, price_max e motivation.
-
-suggested_price, price_min e price_max devono essere numeri interi.
-motivation deve essere una stringa.
-
-Restituisci esclusivamente un oggetto JSON valido, senza blocchi Markdown, senza json e senza testo aggiuntivo.
-        `;
-
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-        });
-
-        const result = response.choices[0].message.content;
-
-        res.json({ suggestion: result });
-    } catch (error) {
-        console.error("ERRORE AI:", error);
-        res.status(500).json({ error: "Errore AI" });
+    if (json) {
+        options.response_format = { type: "json_object" };
     }
-});
 
-router.post("/generate-description", async (req, res) => {
+    const response = await client.chat.completions.create(options);
+
+    return response.choices[0].message.content;
+
+};
+
+
+router.post("/analyze-product", authMiddleware, async (req, res) => {
     try {
         const { product } = req.body;
 
         const prompt = `
-Analizza questo prodotto marketplace.
+Analizza questo prodotto destinato alla vendita su un marketplace.
 
+Dati del prodotto:
 Brand: ${product.brand}
 Categoria: ${product.category}
 Condizione: ${product.condition}
 Taglia: ${product.size}
 
+Esegui le seguenti analisi:
+
+1. Prezzo:
+Suggerisci un prezzo di vendita realistico.
+Restituisci il prezzo suggerito, il prezzo minimo e il prezzo massimo come numeri interi.
+Fornisci anche una breve motivazione basata su brand, categoria, condizione e taglia.
+
+2. Descrizione:
 Scrivi una descrizione pronta per un annuncio di vendita.
+Deve essere un testo unico, fluido e professionale di 4-6 frasi.
+Non usare elenchi, titoli, asterischi o Markdown.
+Evidenzia naturalmente brand, condizione e punti di forza.
 
-Regole:
-- Scrivi un unico testo fluido.
-- Non usare punti elenco.
-- Non usare asterischi o Markdown.
-- Non usare titoli.
-- Evidenzia il brand, la condizione e i punti di forza del prodotto in modo naturale.
-- Mantieni un tono professionale ma coinvolgente.
-- Lunghezza massima: 4-6 frasi.
-`;
+3. Titolo:
+Crea un titolo breve, accattivante, professionale e realistico per un annuncio marketplace.
 
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-        });
-
-        const result = response.choices[0].message.content;
-
-        res.json({ description: result });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Errore AI descrizione" });
-    }
-});
-
-router.post("/generate-title", async (req, res) => {
-    try {
-        const { product } = req.body;
-
-        const prompt = `
-        Crea un titolo breve e accattivante per un annuncio marketplace.
-
-            Brand: ${product.brand}
-        Categoria: ${product.category}
-        Condizione: ${product.condition}
-        Taglia: ${product.size}
-
-        Il titolo deve sembrare professionale e realistico.
-        `;
-
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-        });
-
-        const result = response.choices[0].message.content;
-
-        res.json({ title: result });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Errore AI titolo" });
-    }
-});
-
-router.post("/market-score", async (req, res) => {
-    try {
-        const { product } = req.body;
-
-        const prompt = `
-Analizza questo prodotto marketplace.
-
-Brand: ${product.brand}
-Categoria: ${product.category}
-Condizione: ${product.condition}
-Taglia: ${product.size}
-
+4. Market score:
 Valuta il prodotto come farebbe un esperto di marketplace per l'abbigliamento usato.
+Fornisci:
+- probabilità di vendita
+- appeal del brand
+- breve motivazione
+Mantieni il testo breve, ordinato e naturale.
+Non usare Markdown, asterischi o elenchi.
 
-Scrivi un testo breve, ordinato e facile da leggere.
+5. Punti di forza:
+Individua al massimo 3 punti di forza che rendono il prodotto interessante per un potenziale acquirente.
+Per ogni punto usa un breve titolo seguito da una breve spiegazione.
+Scrivi in italiano, senza Markdown, asterischi o elenchi numerati o puntati.
 
-Regole:
-- Non usare Markdown.
-- Non usare asterischi.
-- Non usare punti elenco.
-- Non usare titoli in grassetto.
-- Mantieni ogni sezione composta da 1 o 2 frasi.
+6. Cliente ideale:
+Descrivi al massimo 3 tipologie di clienti interessati al prodotto.
+Per ogni tipologia usa un breve titolo seguito da una breve spiegazione.
+Scrivi in italiano, senza Markdown, asterischi o elenchi numerati o puntati.
 
-Organizza la risposta con queste tre sezioni:
+Restituisci esclusivamente un unico oggetto JSON valido con questa struttura:
 
-Probabilità di vendita:
-Appeal del brand:
-Breve motivazione:
+{
+  "suggested_price": numero intero,
+  "price_min": numero intero,
+  "price_max": numero intero,
+  "motivation": "stringa",
+  "description": "stringa",
+  "title": "stringa",
+  "market_score": "stringa",
+  "strengths": "stringa",
+  "ideal_customer": "stringa"
+}
 
-Usa un tono professionale, naturale e realistico.
+Non aggiungere testo al di fuori dell'oggetto JSON.
 `;
 
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-        });
+        const result = await callOpenAI(prompt, true);
 
-        const result = response.choices[0].message.content;
+        const parsedResult = JSON.parse(result);
 
-        res.json({ score: result });
+        res.json(parsedResult);
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Errore AI market score" });
-    }
-});
-
-router.post("/product-strengths", async (req, res) => {
-    try {
-        const { product } = req.body;
-
-        const prompt = `
-Analizza questo prodotto destinato alla vendita su un marketplace.
-
-Brand: ${product.brand}
-Categoria: ${product.category}
-Condizione: ${product.condition}
-Taglia: ${product.size}
-
-Elenca al massimo 3 punti di forza che rendono questo prodotto interessante per un potenziale acquirente.
-
-Regole:
-- Scrivi in italiano.
-- Usa un linguaggio naturale e professionale.
-- Non usare Markdown.
-- Non usare asterischi (**).
-- Non usare elenchi puntati o numerati.
-- Ogni punto di forza deve essere composto da un breve titolo seguito da una breve spiegazione.
-
-Esempio di formato:
-
-Qualità del marchio: Brand riconosciuto e apprezzato per affidabilità e stile.
-
-Condizioni eccellenti: Il capo è in ottimo stato e pronto per essere utilizzato.
-
-Taglia ricercata: La taglia disponibile può risultare interessante per una fascia specifica di acquirenti.
-`;
-
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-        });
-
-        const result = response.choices[0].message.content;
-
-        res.json({ strengths: result });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Errore AI strengths" });
-    }
-});
-
-router.post("/ideal-customer", async (req, res) => {
-    try {
-        const { product } = req.body;
-
-        const prompt = `
-Analizza questo prodotto destinato alla vendita su un marketplace.
-
-Brand: ${product.brand}
-Categoria: ${product.category}
-Condizione: ${product.condition}
-Taglia: ${product.size}
-
-Descrivi il cliente ideale per questo prodotto.
-
-Regole:
-- Scrivi in italiano.
-- Usa un linguaggio naturale e professionale.
-- Non usare Markdown.
-- Non usare asterischi (**).
-- Non usare elenchi puntati o numerati.
-- Descrivi al massimo 3 tipologie di clienti.
-- Per ogni tipologia scrivi un breve titolo seguito da una breve spiegazione.
-
-Esempio:
-
-Appassionati di sport: Persone che cercano capi tecnici e confortevoli per l'attività fisica.
-
-Persone di corporatura robusta: Clienti che necessitano di taglie ampie senza rinunciare allo stile.
-
-Amanti del brand: Consumatori che apprezzano la qualità e la reputazione del marchio.
-`;
-
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ]
-        });
-
-        const result = response.choices[0].message.content;
-
-        res.json({
-            idealCustomer: result
-        });
-
-    } catch (error) {
-        console.error("ERRORE AI IDEAL CUSTOMER:", error);
+        console.error("ERRORE AI ANALISI:", error);
 
         res.status(500).json({
-            error: "Errore AI ideal customer"
+            error: "Errore analisi AI"
         });
     }
 });
-
 
 
 module.exports = router;

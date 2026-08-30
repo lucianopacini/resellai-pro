@@ -3,15 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
     getProductById,
-    getAISuggestion,
-    getAIDescription,
-    getAITitle,
-    getAIMarketScore,
-    getAIStrengths,
-    getAIIdealCustomer,
-    updateProduct
+    updateProduct,
+    getAIAnalysis
 } from "../services/api";
-import { isNew, } from "../utils/dateUtils";
 
 function ProductDetail({ onProductUpdated }) {
     const { id } = useParams();
@@ -118,36 +112,29 @@ function ProductDetail({ onProductUpdated }) {
         setAiDescLoading(true);
 
         try {
-            const [priceData, descData, titleData, scoreData, strengthsData, customerData] = await Promise.all([
+            const analysisData = await getAIAnalysis(product);
 
-                getAISuggestion(product),
-                getAIDescription(product),
-                getAITitle(product),
-                getAIMarketScore(product),
-                getAIStrengths(product),
-                getAIIdealCustomer(product)
-            ]);
-
-            console.log(priceData.suggestion);
-            const aiData = JSON.parse(priceData.suggestion);
             const productData = {
-                suggested_price: aiData.suggested_price,
-                price_min: aiData.price_min,
-                price_max: aiData.price_max,
-                motivation: aiData.motivation,
-            }
+                suggested_price: analysisData.suggested_price,
+                price_min: analysisData.price_min,
+                price_max: analysisData.price_max,
+                motivation: analysisData.motivation,
+            };
             await updateProduct(id, productData);
             onProductUpdated();
 
-            console.log("PRICE DATA:", priceData);
-            setAiSuggestion(aiData);
-            setAiDescription(descData.description);
-            setAiTitle(titleData.title);
-            setAiMarketScore(scoreData.score);
-            console.log("SONO IL GRANDE LUCIANO", strengthsData.strengths);
-            setAiStrengths(strengthsData.strengths);
-            console.log("🦁 IDEAL CUSTOMER:", customerData.idealCustomer);
-            setAiIdealCustomer(customerData.idealCustomer);
+            setAiSuggestion({
+                suggested_price: analysisData.suggested_price,
+                price_min: analysisData.price_min,
+                price_max: analysisData.price_max,
+                motivation: analysisData.motivation,
+            });
+
+            setAiDescription(analysisData.description);
+            setAiTitle(analysisData.title);
+            setAiMarketScore(analysisData.market_score);
+            setAiStrengths(analysisData.strengths);
+            setAiIdealCustomer(analysisData.ideal_customer);
 
         } catch (error) {
             setError("❌ Impossibile generare l'analisi AI. Riprova tra qualche secondo.");

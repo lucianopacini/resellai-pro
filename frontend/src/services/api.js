@@ -2,21 +2,26 @@ import { supabase } from "./supabaseClient";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
-export const createProduct = async (productData) => {
+const getAuthHeaders = async () => {
     const { data } = await supabase.auth.getSession();
 
     if (!data.session) {
-        // gestisco l'errore
+        throw new Error("Utente non autenticato.");
     }
 
-    const token = data.session.access_token;
+    return {
+        "Authorization": `Bearer ${data.session.access_token}`,
+    };
+};
+
+export const createProduct = async (productData) => {
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            ...authHeaders,
         },
         body: JSON.stringify(productData),
     });
@@ -26,17 +31,13 @@ export const createProduct = async (productData) => {
 
 
 export const getProducts = async () => {
-    const { data } = await supabase.auth.getSession();
-    const token = data.session.access_token;
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(`${API_URL}/products`, {
-
         method: "GET",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            ...authHeaders,
         },
-
     });
 
     return response.json();
@@ -44,15 +45,13 @@ export const getProducts = async () => {
 
 
 export const deleteProduct = async (id) => {
-    const { data } = await supabase.auth.getSession();
-    const token = data.session.access_token;
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(`${API_URL}/products/${id}`, {
         method: "DELETE",
         headers: {
-            "Authorization": `Bearer ${token}`,
+            ...authHeaders,
         },
-
     });
 
     return response.json();
@@ -60,21 +59,19 @@ export const deleteProduct = async (id) => {
 
 
 export const updateProduct = async (id, productData) => {
-    const { data } = await supabase.auth.getSession();
-    const token = data.session.access_token;
+    const authHeaders = await getAuthHeaders();
 
     const response = await fetch(`${API_URL}/products/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            ...authHeaders,
         },
         body: JSON.stringify(productData),
     });
 
     return response.json();
 };
-
 
 
 export const uploadImage = async (file) => {
@@ -96,6 +93,7 @@ export const uploadImage = async (file) => {
     return publicUrl.publicUrl;
 };
 
+
 export const getProductById = async (id) => {
     try {
         const { data, error } = await supabase
@@ -114,80 +112,18 @@ export const getProductById = async (id) => {
     }
 };
 
-export const getAISuggestion = async (product) => {
-    const response = await fetch(`${API_URL}/api/ai/suggest-price`, {
+
+export const getAIAnalysis = async (product) => {
+    const authHeaders = await getAuthHeaders();
+
+    const response = await fetch(`${API_URL}/api/ai/analyze-product`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            ...authHeaders,
         },
         body: JSON.stringify({ product }),
     });
-
-    return response.json();
-};
-
-export const getAIDescription = async (product) => {
-    const response = await fetch(`${API_URL}/api/ai/generate-description`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ product }),
-    });
-
-    return response.json();
-};
-
-export const getAITitle = async (product) => {
-    const response = await fetch(`${API_URL}/api/ai/generate-title`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ product }),
-    });
-
-    return response.json();
-};
-
-export const getAIMarketScore = async (product) => {
-    const response = await fetch(`${API_URL}/api/ai/market-score`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ product }),
-    });
-
-    return response.json();
-};
-
-export const getAIStrengths = async (product) => {
-    const response = await fetch(
-        `${API_URL}/api/ai/product-strengths`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ product }),
-        }
-    );
-
-    return response.json();
-};
-
-export const getAIIdealCustomer = async (product) => {
-    const response = await fetch(
-        `${API_URL}/api/ai/ideal-customer`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ product }),
-        }
-    );
 
     return response.json();
 };
