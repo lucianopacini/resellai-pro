@@ -26,12 +26,14 @@ function ProductDetail({ onProductUpdated }) {
     const [aiMarketScore, setAiMarketScore] = useState(null);
     const [aiStrengths, setAiStrengths] = useState(null);
     const [aiIdealCustomer, setAiIdealCustomer] = useState(null);
+    const [aiVisualAnalysis, setAiVisualAnalysis] = useState(null);
 
     // Stato sezioni AI
     const [showCustomer, setShowCustomer] = useState(false);
     const [showStrengths, setShowStrengths] = useState(false);
     const [showSuggestion, setShowSuggestion] = useState(false);
     const [showDescription, setShowDescription] = useState(false);
+    const [showVisualAnalysis, setShowVisualAnalysis] = useState(false);
 
     // Stato caricamento AI
     const [aiDescLoading, setAiDescLoading] = useState(false);
@@ -60,6 +62,8 @@ function ProductDetail({ onProductUpdated }) {
         setAiDescLoading(false);
         setAiStrengths(null);
         setAiIdealCustomer(null);
+        setAiVisualAnalysis(null);
+        setShowVisualAnalysis(false);
     }, [id]);
 
     // Chiusura modal con tasto esc
@@ -119,6 +123,12 @@ function ProductDetail({ onProductUpdated }) {
                 price_min: analysisData.price_min,
                 price_max: analysisData.price_max,
                 motivation: analysisData.motivation,
+                description: analysisData.description,
+                title: analysisData.title,
+                market_score: analysisData.market_score,
+                strengths: analysisData.strengths,
+                ideal_customer: analysisData.ideal_customer,
+                visual_analysis: analysisData.visual_analysis,
             };
             await updateProduct(id, productData);
             onProductUpdated();
@@ -135,6 +145,7 @@ function ProductDetail({ onProductUpdated }) {
             setAiMarketScore(analysisData.market_score);
             setAiStrengths(analysisData.strengths);
             setAiIdealCustomer(analysisData.ideal_customer);
+            setAiVisualAnalysis(analysisData.visual_analysis);
 
         } catch (error) {
             setError("❌ Impossibile generare l'analisi AI. Riprova tra qualche secondo.");
@@ -157,6 +168,12 @@ function ProductDetail({ onProductUpdated }) {
                 motivation: product.motivation,
             };
             setAiSuggestion(savedAiSuggestion);
+            setAiDescription(product.description);
+            setAiTitle(product.title);
+            setAiMarketScore(product.market_score);
+            setAiStrengths(product.strengths);
+            setAiIdealCustomer(product.ideal_customer);
+            setAiVisualAnalysis(product.visual_analysis);
         }
     };
 
@@ -379,6 +396,31 @@ function ProductDetail({ onProductUpdated }) {
                                     </>
                                 )}
                             </div>
+
+                            <div>
+                                {aiVisualAnalysis && (
+                                    <>
+                                        <button
+                                            onClick={() => setShowVisualAnalysis(!showVisualAnalysis)}
+                                        >
+                                            {showVisualAnalysis ? "▼" : "▶"} 📷 Analisi visiva AI
+                                        </button>
+
+                                        {showVisualAnalysis && (
+                                            <p
+                                                style={{
+                                                    marginTop: "10px",
+                                                    color: "#374151",
+                                                    lineHeight: "1.7"
+                                                }}
+                                            >
+                                                {aiVisualAnalysis}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
                         </div>
 
                     </div>
@@ -419,3 +461,19 @@ function ProductDetail({ onProductUpdated }) {
 }
 
 export default ProductDetail;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

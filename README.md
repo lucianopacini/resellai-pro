@@ -7,7 +7,7 @@
 
 ResellAI Pro è un'applicazione Full Stack progettata per aiutare gli utenti nella vendita di capi di abbigliamento usati attraverso il supporto dell'intelligenza artificiale.
 
-L'utente può inserire le informazioni del prodotto e caricare un'immagine. L'analisi AI attuale utilizza i dati testuali del prodotto (brand, categoria, condizione e taglia) per generare prezzo suggerito, fascia di prezzo, descrizione ottimizzata, punti di forza e cliente ideale.
+L'utente può inserire le informazioni del prodotto, caricare un'immagine e ottenere un'analisi AI completa. L'analisi utilizza sia i dati testuali del prodotto (brand, categoria, condizione e taglia) sia l'immagine caricata per generare prezzo suggerito, fascia di prezzo, descrizione ottimizzata, punti di forza, cliente ideale e analisi visiva.
 
 Il progetto è stato sviluppato con React, Node.js, Express, Supabase e OpenAI API per offrire un'esperienza semplice, moderna e intuitiva.
 
@@ -20,6 +20,7 @@ Il progetto è stato sviluppato con React, Node.js, Express, Supabase e OpenAI A
 - 🎯 Individuazione del cliente ideale.
 - ⭐ Evidenziazione dei principali punti di forza del prodotto.
 - 📷 Caricamento e gestione delle immagini.
+- 👀 Analisi visiva AI delle immagini dei prodotti.
 - 🔐 Autenticazione utente.
 - 📂 Storico delle valutazioni salvate.
 - 🔍 Ricerca e filtro dei prodotti.
@@ -56,19 +57,27 @@ Il progetto è stato sviluppato con React, Node.js, Express, Supabase e OpenAI A
 
 ResellAI Pro è organizzato secondo un'architettura Full Stack, composta da un frontend sviluppato con React, un backend realizzato con Node.js ed Express, un database PostgreSQL gestito tramite Supabase e l'integrazione delle API OpenAI per l'analisi AI dei prodotti.
 
-Utente
-   │
-   ▼
-Frontend (React)
-   │
-   ▼
-Backend (Node.js + Express)
-   │
-   ├────────────► OpenAI API
-   │
-   ▼
-Supabase
-(Database + Storage)
+                         👤 UTENTE
+                             │
+                             ▼
+                    🖥️ FRONTEND (React)
+                             │
+                             ▼
+                 ⚙️ BACKEND (Node + Express)
+                       /                 \
+                      /                   \
+                     ▼                     ▼
+          🗄️ SUPABASE                  🤖 OPENAI API
+       Database + Storage          Analisi AI + Vision
+                     ▲                     │
+                     │                     ▼
+                     └──────────────  JSON RISULTATO
+                                           │
+                                           ▼
+                                    🖥️ FRONTEND
+                                           │
+                                           ▼
+                                      👤 UTENTE
 
 
 ## 📸 Screenshot
@@ -87,55 +96,79 @@ Supabase
 
 
 ## 🚀 Installazione
-```bash
+
 1. Clona il repository.
-
+```bash
 git clone ...
-
-2. Entra nella cartella del progetto.
-
 cd ...
-
-3. Installa le dipendenze.
-
+```
+2. Installa le dipendenze del frontend.
+```bash
+cd frontend
 npm install
+```
+3. Configura il file .env del frontend.
 
-4. Configura le variabili d'ambiente.
-5. Avvia il progetto.
+4. Installa le dipendenze del backend.
+```bash
+cd ../backend
+npm install
+```
+5. Configura il file .env del backend.
 
+6. Avvia il frontend e il backend in due terminali separati.
+Frontend:
+```bash
+npm run dev
+```
+Backend:
+```bash
 npm run dev
 ```
 
 ## ⚙️ Variabili d'ambiente
+
+### Frontend
+Creare un file `.env` nella cartella del frontend:
 ```env
-VITE_BACKEND_URL=
-
+VITE_API_URL=
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
+### Backend
+Creare un file `.env` nella cartella del backend:
+```env
 OPENAI_API_KEY=
-
 SUPABASE_URL=
-
 SUPABASE_ANON_KEY=
 ```
+
 ## 🌐 API
 
 ResellAI Pro utilizza le API di OpenAI per analizzare i prodotti e generare automaticamente:
 
 - Prezzo suggerito
 - Fascia di prezzo
+- Titolo ottimizzato
+- Descrizione ottimizzata per la vendita
 - Cliente ideale
 - Punti di forza
-- Descrizione ottimizzata per la vendita
+- Market score
+- Analisi visiva e verifica di coerenza tra immagine e dati inseriti
+
 
 ### OpenAI API
 
-Utilizzata per generare automaticamente l'analisi AI dei prodotti.
+Utilizzata per generare automaticamente l'analisi AI dei prodotti, inclusa l'analisi visiva delle immagini.
+
 
 ### Backend API
 
-- GET /prodotti
-- POST /valuta
-- PUT /prodotti/:id
-- DELETE /prodotti/:id
+- GET    /products
+- POST   /products
+- PUT    /products/:id
+- DELETE /products/:id
+- POST /api/ai/analyze-product
 
 
 ## 🔮 Sviluppi futuri
@@ -144,7 +177,6 @@ Utilizzata per generare automaticamente l'analisi AI dei prodotti.
 - [ ] Migliorare ulteriormente la qualità delle analisi AI.
 - [ ] Aggiungere statistiche e dashboard personali.
 - [ ] Consentire il caricamento di più immagini per prodotto.
-- [ ] Implementare l'analisi visiva delle immagini tramite AI.
 - [ ] Implementare notifiche e preferiti.
 - [ ] Migliorare ulteriormente l'interfaccia utente e l'esperienza d'uso.
 - [ ] Migliorare continuamente il progetto attraverso nuove funzionalità e ottimizzazioni.

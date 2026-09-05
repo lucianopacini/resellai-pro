@@ -32,6 +32,15 @@ const analyzeProduct = async (req, res) => {
             });
         }
 
+        if (
+            typeof product.image_url !== "string" ||
+            !product.image_url.trim()
+        ) {
+            return res.status(400).json({
+                error: "Immagine del prodotto mancante.",
+            });
+        }
+
 
         const prompt = `
 Analizza questo prodotto destinato alla vendita su un marketplace.
@@ -77,6 +86,27 @@ Descrivi al massimo 3 tipologie di clienti interessati al prodotto.
 Per ogni tipologia usa un breve titolo seguito da una breve spiegazione.
 Scrivi in italiano, senza Markdown, asterischi o elenchi numerati o puntati.
 
+7. Analisi visiva e controllo di coerenza:
+Analizza prima l'immagine in modo indipendente dai dati testuali forniti dall'utente.
+
+Descrivi esclusivamente ciò che è effettivamente visibile nella fotografia:
+tipologia apparente del capo, colore, stile, dettagli visibili ed eventuali difetti evidenti.
+
+Confronta poi ciò che osservi nell'immagine con:
+Brand: ${product.brand}
+Categoria: ${product.category}
+Condizione: ${product.condition}
+Taglia: ${product.size}
+
+Se l'immagine non è coerente con uno o più dati dichiarati dall'utente,
+devi segnalarlo chiaramente nell'analisi.
+
+Non modificare mentalmente la fotografia per renderla coerente con i dati testuali.
+Se, ad esempio, i dati indicano "pantaloni" ma nell'immagine compare una
+maglietta, scrivi esplicitamente che esiste una possibile incongruenza.
+
+Non inventare informazioni che non possono essere verificate dall'immagine.
+
 Restituisci esclusivamente un unico oggetto JSON valido con questa struttura:
 
 {
@@ -88,13 +118,18 @@ Restituisci esclusivamente un unico oggetto JSON valido con questa struttura:
   "title": "stringa",
   "market_score": "stringa",
   "strengths": "stringa",
-  "ideal_customer": "stringa"
+  "ideal_customer": "stringa",
+  "visual_analysis": "stringa"
 }
 
 Non aggiungere testo al di fuori dell'oggetto JSON.
 `;
 
-        const result = await callOpenAI(prompt, true);
+        const result = await callOpenAI(
+            prompt,
+            true,
+            product.image_url
+        );
 
         const parsedResult = JSON.parse(result);
 

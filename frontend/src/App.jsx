@@ -9,7 +9,6 @@ import {
   uploadImage,
 } from "./services/api";
 import { supabase } from "./services/supabaseClient";
-import ProductCard from "./components/ProductCard";
 import ProductList from "./components/ProductList";
 import ProductForm from "./components/ProductForm";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -88,9 +87,10 @@ function App() {
       !formData.category ||
       !formData.brand ||
       !formData.size ||
-      !formData.condition
+      !formData.condition ||
+      (!editingProduct && !image)
     ) {
-      alert("Compila tutti i campi del prodotto");
+      alert("Compila tutti i campi del prodotto e carica un'immagine");
       return;
     }
     // Verifica autenticazione
@@ -99,7 +99,7 @@ function App() {
       return;
     }
     // Upload immagine
-    let imageUrl = "";
+    let imageUrl = editingProduct?.image_url || "";
 
     if (image) {
       imageUrl = await uploadImage(image);
@@ -117,6 +117,11 @@ function App() {
       price_min: 0,
       price_max: 0,
       motivation: "",
+      description: "",
+      title: "",
+      market_score: "",
+      strengths: "",
+      ideal_customer: "",
       visual_analysis: "",
       user_id: loggedUser?.id || null,
     };
@@ -156,6 +161,8 @@ function App() {
 
   const handleCancelEdit = () => {
     setEditingProduct(null);
+    setImage(null);
+    setPreview("");
 
     setFormData({
       category: "",
@@ -163,6 +170,10 @@ function App() {
       size: "",
       condition: "",
     });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -225,8 +236,10 @@ function App() {
   // ===== EFFECT =====
   // Carica i prodotti all'avvio dell'app
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (loggedUser) {
+      fetchProducts();
+    }
+  }, [loggedUser]);
 
   // Ripristina la sessione utente se già autenticato
   useEffect(() => {

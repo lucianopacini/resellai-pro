@@ -76,6 +76,8 @@ const updateProduct = async (req, res) => {
 
     const productData = filterProductFields(req.body);
 
+    delete productData.user_id;
+
     const validation = validateUpdateProduct(productData);
 
     if (!validation.valid) {

@@ -5,10 +5,32 @@ const client = new OpenAI({
     timeout: 30000,
 });
 
-const callOpenAI = async (prompt, json = false) => {
+const callOpenAI = async (prompt, json = false, imageUrl = null) => {
+
+    const content = [
+        {
+            type: "text",
+            text: prompt,
+        },
+    ];
+
+    if (imageUrl) {
+        content.push({
+            type: "image_url",
+            image_url: {
+                url: imageUrl,
+            },
+        });
+    }
+
     const options = {
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+            {
+                role: "user",
+                content,
+            },
+        ],
     };
 
     if (json) {
